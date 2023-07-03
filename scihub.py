@@ -46,7 +46,7 @@ class SciHub(object):
         '''
         Finds available scihub urls via https://sci-hub.now.sh/
         '''
-        urls = ['https://sci-hub.hkvisa.net/']
+        urls = ['https://sci-hub.se/']
         # res = requests.get('https://sci-hub.now.sh/')
         # s = self._get_soup(res.content)
         # for a in s.find_all('a', href=True):
