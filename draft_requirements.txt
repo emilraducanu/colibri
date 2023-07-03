@@ -1,6 +1,6 @@
 selenium
-fake_useragent
 bs4
 requests
+black
 
 https://github.com/mozilla/geckodriver/releases
