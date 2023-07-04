@@ -6,7 +6,8 @@ import time
 import pytz
 import datetime
 import pandas as pd
-from scihub import SciHub
+
+# from scihub import SciHub
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
@@ -55,9 +56,13 @@ def get_metadata_wos(query: str):
         + str(utc_current_time.second)
     )
 
-    print(f"Begin scrapping at {utc_current_time_str}.")
+    print(f"Start scrapping at {utc_current_time_str}.")
 
-    tmp_xls_files = "./data/tmp_" + utc_current_time_str
+    current_dir = os.getcwd()
+    target_folder = "SOCSciCompiler"
+    while os.path.basename(current_dir) != target_folder:
+        current_dir = os.path.dirname(current_dir)
+    tmp_xls_files = os.path.join(current_dir, "data/tmp_" + utc_current_time_str)
     os.makedirs(tmp_xls_files)
 
     url = "https://www.webofscience.com/wos/woscc/advanced-search"
@@ -128,11 +133,12 @@ def get_metadata_wos(query: str):
         time.sleep(5)
         local_downloads_path = os.path.expanduser("~/Downloads")
         full_path_downloaded_files = []
-        for i in local_downloads_path:
-            full_path_downloaded_files.append(local_downloads_path + "/" + i)
+        for filename in os.listdir(local_downloads_path):
+            if filename.endswith(".xls"):
+                full_path_downloaded_files.append(local_downloads_path + "/" + filename)
         latest_file = max(full_path_downloaded_files, key=os.path.getctime)
         shutil.move(
-            latest_file, os.path.join(tmp_xls_files, str(batch_nb + 1) + ".xls")
+            latest_file, os.path.join(tmp_xls_files, str(input_aera_idex + 1) + ".xls")
         )
 
     for batch_nb in range(int(int(nb_results) / 1000)):
@@ -173,18 +179,29 @@ def get_metadata_wos(query: str):
     ]
     size_before = len(df)
     df = df[attributes_to_keep]
+    check_emptyness = [
+        "DOI",
+        "Article Title",
+        "Authors",
+        "Publication Year",
+        "Abstract",
+    ]
+    df = df.dropna(subset=check_emptyness, how="all")
     df = df.drop_duplicates()
     df = df[df["DOI"].duplicated(keep=False) == False]
     size_after = len(df)
     size_diff = size_before - size_after
     proportion = round(size_diff * 100 / size_before, 1)
 
-    print(f"{size_diff} duplicates deleted ({proportion}%).")
+    print(
+        f"{size_diff} papers deleted ({proportion}%) because of lack of information or duplicates."
+    )
 
     print("\nSummary Information:")
     print(df.info())
 
-    data_folder = os.makedirs("./data/" + utc_current_time_str)
+    data_folder = os.path.join(current_dir, "data/" + utc_current_time_str)
+    os.makedirs(data_folder)
     metadata_file = os.path.join(data_folder, "metadata.pkl")
     df.to_pickle(metadata_file)
 
