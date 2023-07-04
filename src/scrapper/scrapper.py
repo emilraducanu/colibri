@@ -1,4 +1,4 @@
-# Homemade article scrapping API
+# Homemade API for scientific article scrapping
 
 import os
 import shutil
@@ -9,6 +9,7 @@ import pandas as pd
 from scihub import SciHub
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
 
 
 def get_metadata_wos(query: str):
@@ -54,9 +55,18 @@ def get_metadata_wos(query: str):
         + str(utc_current_time.second)
     )
 
+    print(f"Begin scrapping at {utc_current_time_str}.")
+
+    tmp_xls_files = "./data/tmp_" + utc_current_time_str
+    os.makedirs(tmp_xls_files)
+
     url = "https://www.webofscience.com/wos/woscc/advanced-search"
-    driver = webdriver.Firefox()
+    firefox_options = Options()
+    firefox_options.add_argument("-headless")
+    driver = webdriver.Firefox(options=firefox_options)
     driver.get(url)
+
+    print(f"Connected to Web of Science.")
 
     time.sleep(3)
     driver.find_element(By.ID, "onetrust-reject-all-handler").click()
@@ -66,12 +76,16 @@ def get_metadata_wos(query: str):
     search_input.send_keys(query)
     search_input.submit()
 
+    print(f"Searching papers corresponding to query: {query}...")
+
     time.sleep(2)
     nb_results = driver.find_element(
         By.XPATH,
         "/html/body/app-wos/main/div/div/div[2]/div/div/div[2]/app-input-route/app-base-summary-component/app-search-friendly-display/div[1]/app-general-search-friendly-display/div[1]/h1/span",
     ).text
     nb_results = int(nb_results.replace(",", ""))
+
+    print(f"Found {nb_results} papers.")
 
     def downloader(input_aera_idex, sent_key_low, sent_key_high):
         time.sleep(2)
@@ -115,24 +129,114 @@ def get_metadata_wos(query: str):
         local_downloads_path = os.path.expanduser("~/Downloads")
         full_path_downloaded_files = []
         for i in local_downloads_path:
-            full_path_downloaded_files.append("/home/er/Downloads/" + i)
+            full_path_downloaded_files.append(local_downloads_path + "/" + i)
         latest_file = max(full_path_downloaded_files, key=os.path.getctime)
-        tmp_output_path = "./data/tmp_" + utc_current_time_str
-        if not os.path.exists(tmp_output_path):
-            os.makedirs(tmp_output_path)
         shutil.move(
-            latest_file, os.path.join(tmp_output_path, str(batch_nb + 1) + ".xls")
+            latest_file, os.path.join(tmp_xls_files, str(batch_nb + 1) + ".xls")
         )
 
     for batch_nb in range(int(int(nb_results) / 1000)):
         downloader(batch_nb, int(batch_nb * 1000) + 1, int(batch_nb * 1000) + 1000)
+        downloaded_count = (batch_nb + 1) * 1000
+        print(f"{downloaded_count} papers downloaded over {nb_results}.")
     downloader(
         int(int(nb_results) / 1000), int(int(nb_results) / 1000) * 1000, nb_results
     )
+    print(f"{nb_results} papers downloaded over {nb_results}.")
+
+    driver.quit()
+
+    print(f"Cleaning the dataset...")
+
+    data = []
+    for filename in os.listdir(tmp_xls_files):
+        file_path = os.path.join(tmp_xls_files, filename)
+        df = pd.read_excel(file_path)
+        data.append(df)
+    df = pd.concat(data)
+
+    shutil.rmtree(tmp_xls_files)
+
+    attributes_to_keep = [
+        "DOI",
+        "Article Title",
+        "Authors",
+        "Publication Year",
+        "Abstract",
+        "Author Keywords",
+        "Language",
+        "Affiliations",
+        "Source Title",
+        "Publisher",
+        "Volume",
+        "Issue",
+    ]
+    size_before = len(df)
+    df = df[attributes_to_keep]
+    df = df.drop_duplicates()
+    df = df[df["DOI"].duplicated(keep=False) == False]
+    size_after = len(df)
+    size_diff = size_before - size_after
+    proportion = round(size_diff * 100 / size_before, 1)
+
+    print(f"{size_diff} duplicates deleted ({proportion}%).")
+
+    print("\nSummary Information:")
+    print(df.info())
+
+    data_folder = os.makedirs("./data/" + utc_current_time_str)
+    metadata_file = os.path.join(data_folder, "metadata.pkl")
+    df.to_pickle(metadata_file)
+
+    print(f"\nMetadata of {size_after} papers saved to {metadata_file}.")
+
+    return metadata_file
+
+
+def get_metadata_scholar(query: str):
+    """Quick description
+
+    Long description
+
+    Parameters:
+    query (str):
+
+    Returns:
+
+    """
+    pass
+
+
+def get_metadata_scopus(query: str):
+    """Quick description
+
+    Long description
+
+    Parameters:
+    query (str):
+
+    Returns:
+
+    """
+    pass
+
+
+def get_pdf_scihub(metadata: str):
+    """Quick description
+
+    Long description
+
+    Parameters:
+    metadata (str):
+
+    Returns:
+
+    """
+    pass
 
 
 def main():
-    pass
+    get_metadata_wos("ts = (specific searching query)")
 
 
 if __name__ == "__main__":
