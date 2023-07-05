@@ -65,7 +65,7 @@ def get_metadata_wos(query: str):
 
     url = "https://www.webofscience.com/wos/woscc/advanced-search"
     firefox_options = Options()
-    # firefox_options.add_argument("-headless")
+    firefox_options.add_argument("-headless")
     driver = webdriver.Firefox(options=firefox_options)
     driver.get(url)
 
@@ -91,7 +91,7 @@ def get_metadata_wos(query: str):
     print(f"Found {nb_results} papers.")
 
     def downloader(input_aera_idex, sent_key_low, sent_key_high):
-        time.sleep(2)
+        time.sleep(5)
         driver.find_element(
             By.XPATH,
             "/html/body/app-wos/main/div/div/div[2]/div/div/div[2]/app-input-route/app-base-summary-component/div/div[2]/app-page-controls[1]/div/app-export-option/div/app-export-menu/div/button",
@@ -128,7 +128,7 @@ def get_metadata_wos(query: str):
             "/html/body/app-wos/main/div/div/div[2]/div/div/div[2]/app-input-route[1]/app-export-overlay/div/div[3]/div[2]/app-export-out-details/div/div[2]/form/div/div[2]/button[1]",
         ).click()
 
-        time.sleep(5)
+        time.sleep(10)
         local_downloads_path = os.path.expanduser("~/Downloads")
         full_path_downloaded_files = []
         for filename in os.listdir(local_downloads_path):
