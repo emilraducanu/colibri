@@ -6,8 +6,6 @@ import time
 import pytz
 import datetime
 import pandas as pd
-
-# from scihub import SciHub
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
@@ -38,7 +36,7 @@ def get_metadata_wos(query: str):
     query (str): searching query. Sythax (https://webofscience.help.clarivate.com/en-us/Content/wos-core-collection/woscc-search-field-tags.htm).
 
     Returns:
-    The path of pickle file containing metadata.
+    The path of Pickle file containing metadata.
     """
 
     utc_current_time = datetime.datetime.now(tz=pytz.timezone("UTC"))
@@ -67,7 +65,7 @@ def get_metadata_wos(query: str):
 
     url = "https://www.webofscience.com/wos/woscc/advanced-search"
     firefox_options = Options()
-    firefox_options.add_argument("-headless")
+    # firefox_options.add_argument("-headless")
     driver = webdriver.Firefox(options=firefox_options)
     driver.get(url)
 
@@ -179,13 +177,7 @@ def get_metadata_wos(query: str):
     ]
     size_before = len(df)
     df = df[attributes_to_keep]
-    check_emptyness = [
-        "DOI",
-        "Article Title",
-        "Authors",
-        "Publication Year",
-        "Abstract",
-    ]
+    check_emptyness = ["DOI", "Article Title", "Abstract"]
     df = df.dropna(subset=check_emptyness, how="all")
     df = df.drop_duplicates()
     df = df[df["DOI"].duplicated(keep=False) == False]
