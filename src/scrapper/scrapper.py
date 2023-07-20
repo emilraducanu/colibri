@@ -71,20 +71,20 @@ def get_metadata_wos(query: str):
 
     print(f"Connected to Web of Science.")
 
-    time.sleep(3)
+    time.sleep(5)
     driver.find_element(By.ID, "onetrust-reject-all-handler").click()
 
-    time.sleep(2)
+    time.sleep(5)
     search_input = driver.find_element(By.ID, "advancedSearchInputArea")
     search_input.send_keys(query)
     search_input.submit()
 
     print(f"Searching papers corresponding to query: {query}...")
 
-    time.sleep(2)
+    time.sleep(5)
     nb_results = driver.find_element(
         By.XPATH,
-        "/html/body/app-wos/main/div/div/div[2]/div/div/div[2]/app-input-route/app-base-summary-component/app-search-friendly-display/div[1]/app-general-search-friendly-display/div[1]/h1/span",
+        "/html/body/app-wos/main/div/div/div[2]/div/div/div[2]/app-input-route/app-base-summary-component/app-search-friendly-display/div[1]/app-general-search-friendly-display/div[1]/div[1]/h1/span",
     ).text
     nb_results = int(nb_results.replace(",", ""))
 
