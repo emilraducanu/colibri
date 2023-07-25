@@ -1,3 +1,9 @@
+
+
+```markdown
+![Logo](logos/logo_colibri_full_1500x1500.png)
+```
+
 # SOCSciCompiler
 
 **S**oil **O**rganic **C**arbon **Sci**ence **Compiler**,
