@@ -1,7 +1,7 @@
 ![Logo](./logos/banner_colibri.png)
 ---
 
-T f **🐦 colibri** is a Python package aimed to synthesise scientific literature. Specify the topic you want to study and **🐦 colibri** will select publications from various sources, analyse, extract and compile relevant data from them.
+ **🐦 colibri** is a Python package aimed to synthesise scientific literature. Specify the topic you want to study and **🐦 colibri** will select publications from various sources, analyse, extract and compile relevant data from them.
 
 This project was developed as part of the [Operationalising International Reseach Cooperation on Soil carbon (ORCaSa)](https://irc-orcasa.eu/), an initiative that aims to bring together international stakeholders working on techniques for capturing and storing carbon in the soil.
 
