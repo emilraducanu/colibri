@@ -9,6 +9,20 @@ This project was developed as part of the [Operationalising International Reseac
 
 <br/>
 
-# Installation & setup
-# Author
+# 🎬 Pipeline backstage
+###### 1. Scrapping
+xxx
+
+###### 2. Filtering
+xxx
+
+###### 3. Characterising
+xxx
+# ⚙️ Installation & setup
+xxx
+
+# 💡 Use cases
+xxx
+
+# ✍️ Author & license
 This project is developed by [Emil Răducanu](https://github.com/emilraducanu).
