@@ -10,13 +10,13 @@ This project was developed as part of the [Operationalising International Reseac
 <br/>
 
 # 🎬 Pipeline backstage
-##### 1. Scrapping
+#### 1. Scrapping
 xxx
 
-##### 2. Filtering
+#### 2. Filtering
 xxx
 
-##### 3. Characterising
+#### 3. Characterising
 xxx
 # ⚙️ Getting started
 xxx
