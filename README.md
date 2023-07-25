@@ -1,4 +1,4 @@
-![Logo](https://file+.vscode-resource.vscode-cdn.net/home/er/Documents/Cirad/colibri/logos/logo_colibri_full_1500x1500.png)
+![Logo](./logos/logo_colibri_full_1500x1500.png)
 
 # SOCSciCompiler
 
