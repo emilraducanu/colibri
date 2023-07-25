@@ -24,5 +24,5 @@ xxx
 # 💡 Use cases
 xxx
 
-# ✍️ Author & license
+# 📜 Author & license
 This project is developed by [Emil Răducanu](https://github.com/emilraducanu).
