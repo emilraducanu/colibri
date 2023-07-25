@@ -1,4 +1,4 @@
-![Logo](./logos/logo_colibri_full_1500x1500.png)
+![Logo](./logos/banner_colibri.png)
 
 # SOCSciCompiler
 
