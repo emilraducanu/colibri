@@ -4,7 +4,7 @@
 
 This project was developed as part of the [Operationalising International Reseach Cooperation on Soil carbon (ORCaSa)](https://irc-orcasa.eu/), an initiative that aims to bring together international stakeholders working on techniques for capturing and storing carbon in the soil.
 
-⚠︎ :warning: *Important note* <br/>
+:warning: *Important note* <br/>
 **colibri** *is developed in the spirit of synthesising all kind of publication focusing on any topics. For the moment, only the compilation of meta-analyses dealing with the impact of human practices on soil organic carbon is currently implemented.*
 
 <br/>
@@ -21,7 +21,7 @@ xxx
 
 <br/>
 
-# ⚙️ Getting started
+# 🚦 Getting started
 xxx
 
 <br/>
