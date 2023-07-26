@@ -28,8 +28,6 @@ Before setting up the environment, make sure you have `conda` installed on your 
 - [Anaconda](https://docs.anaconda.com/free/anaconda/install/) (used by the developers for this project)
 - [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
 
-<br/>
-
 ### 2. Setup
 
 To set up the environment and install the required dependencies, run the following commands:
