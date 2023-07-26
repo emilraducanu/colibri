@@ -1,6 +1,0 @@
-selenium
-bs4
-requests
-black
-
-https://github.com/mozilla/geckodriver/releases
