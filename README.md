@@ -57,11 +57,15 @@ Make sure to follow steps of the **⚙️ Getting started** section beforehand.
 
 # 📝 To do
 **colibri** is an open-source project still under development. Here is a non-exhaustive list of features that could be implemented in the future. Feel free to contribute!
-1. Support other OS than Ubuntu.
-2. Support other Web browsers than Mozilla Firefox to scrape Web of Science.
+1. Dimensions AI scrapping
+2. Run text classification models to filter publications
+3. Get PDFs
+4. Support other OS than Ubuntu.
+5. Support other Web browsers than Mozilla Firefox to scrape Web of Science.
+6. ...
 
 <br/>
 
 # 📜 Author & license
-This project is developed by [Emil Răducanu](https://github.com/emilraducanu).<br/>
+This project is developed by [Emil Răducanu](https://github.com/emilraducanu) and [Damien Beillouin](https://github.com/dbeillouin).<br/>
 License: to be determined.
