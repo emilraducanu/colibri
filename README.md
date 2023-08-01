@@ -58,11 +58,12 @@ Make sure to follow steps of the **⚙️ Getting started** section beforehand.
 # 📝 To do
 **colibri** is an open-source project still under development. Here is a non-exhaustive list of features that could be implemented in the future. Feel free to contribute!
 1. Dimensions AI scrapping
-2. Run text classification models to filter publications
-3. Get PDFs
-4. Support other OS than Ubuntu.
-5. Support other Web browsers than Mozilla Firefox to scrape Web of Science.
-6. ...
+2. Data merger
+3. Run text classification models to filter publications
+4. Get PDFs
+5. Support other OS than Ubuntu.
+6. Support other Web browsers than Mozilla Firefox to scrape Web of Science.
+7. ...
 
 <br/>
 

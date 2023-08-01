@@ -1,6 +1,3 @@
-# Homemade API for scientific article scrapping
-
-
 def wos(query: str):
     """Get metadata (title, authors, DOI, etc.) of papers coming from Web of Science
 
@@ -23,7 +20,7 @@ def wos(query: str):
     Must have Mozilla Firefox as a default web browser.
 
     Parameters:
-    query (str): searching query. Sythax (https://webofscience.help.clarivate.com/en-us/Content/wos-core-collection/woscc-search-field-tags.htm).
+    query (str): search query. Sythax (https://webofscience.help.clarivate.com/en-us/Content/wos-core-collection/woscc-search-field-tags.htm).
 
     Returns:
     The path of Pickle file containing metadata.
