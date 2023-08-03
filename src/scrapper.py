@@ -1,4 +1,4 @@
-def wos(query: str):
+def wos(data_folder, query: str):
     """Get metadata (title, authors, DOI, etc.) of papers coming from Web of Science
 
     This function provides metadata of scientific articles coming from the
@@ -36,28 +36,7 @@ def wos(query: str):
     from selenium.webdriver.common.by import By
     from selenium.webdriver.firefox.options import Options
 
-    utc_current_time = datetime.datetime.now(tz=pytz.timezone("UTC"))
-    utc_current_time_str = (
-        str(utc_current_time.year)
-        + "-"
-        + str(utc_current_time.month)
-        + "-"
-        + str(utc_current_time.day)
-        + "_"
-        + str(utc_current_time.hour)
-        + "-"
-        + str(utc_current_time.minute)
-        + "-"
-        + str(utc_current_time.second)
-    )
-
-    print(f"Start scrapping at {utc_current_time_str}.")
-
-    current_dir = os.getcwd()
-    target_folder = "SOCSciCompiler"
-    while os.path.basename(current_dir) != target_folder:
-        current_dir = os.path.dirname(current_dir)
-    tmp_xls_files = os.path.join(current_dir, "data/wos/tmp_" + utc_current_time_str)
+    tmp_xls_files = os.path.join(data_folder, "tmp")
     os.makedirs(tmp_xls_files)
 
     url = "https://www.webofscience.com/wos/woscc/advanced-search"
@@ -75,8 +54,6 @@ def wos(query: str):
     search_input = driver.find_element(By.ID, "advancedSearchInputArea")
     search_input.send_keys(query)
     search_input.submit()
-
-    print(f"Searching papers corresponding to query: {query}...")
 
     time.sleep(5)
     nb_results = driver.find_element(
@@ -147,7 +124,7 @@ def wos(query: str):
 
     driver.quit()
 
-    print(f"Cleaning the dataset...")
+    print(f"Cleaning the results...")
 
     data = []
     for filename in os.listdir(tmp_xls_files):
@@ -186,17 +163,16 @@ def wos(query: str):
         f"{size_diff} papers deleted ({proportion}%) because of lack of information or duplicates."
     )
 
-    print("\nSummary Information:")
-    print(df.info())
-
-    data_folder = os.path.join(current_dir, "data/" + utc_current_time_str)
+    data_folder = os.path.join(current_dir, "data/scrapped/" + utc_current_time_str)
     os.makedirs(data_folder)
-    metadata_file = os.path.join(data_folder, "metadata.pkl")
-    df.to_pickle(metadata_file)
+    data_file = os.path.join(data_folder, "metadata.pkl")
+    df.to_pickle(data_file)
 
-    print(f"\nMetadata of {size_after} papers saved to {metadata_file}.")
+    print(
+        f"\nData of {size_after} papers from Web of Science Core Collection saved to {data_file}."
+    )
 
-    return metadata_file
+    return data_file
 
 
 def get_metadata_scholar(query: str):
@@ -239,14 +215,3 @@ def get_pdf_scihub(metadata: str):
 
     """
     pass
-
-
-def main():
-    wos("ts = (specific searching query)")
-
-
-if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        print("An error occurred: {}".format(str(e)))
