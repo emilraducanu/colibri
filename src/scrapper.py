@@ -1,9 +1,8 @@
 def wos(data_folder, query: str):
-    """Get metadata (title, authors, DOI, etc.) of papers coming from Web of Science
+    """Get data (title, authors, DOI, etc.) of papers coming from Web of Science
 
-    This function provides metadata of scientific articles coming from the
-    results of a searching query on Web of Science (https://www.webofscience.com/wos/woscc/advanced-search).
-    The metadata collected for each article are:
+    This function provides data of scientific articles coming from the results of a search query on Web of Science Core Collection (https://www.webofscience.com/wos/woscc/advanced-search).
+    The data collected for each result are:
     * DOI
     * Title
     * Authors
@@ -23,14 +22,12 @@ def wos(data_folder, query: str):
     query (str): search query. Sythax (https://webofscience.help.clarivate.com/en-us/Content/wos-core-collection/woscc-search-field-tags.htm).
 
     Returns:
-    The path of Pickle file containing metadata.
+    The path of Pickle file containing data.
     """
 
     import os
     import shutil
     import time
-    import pytz
-    import datetime
     import pandas as pd
     from selenium import webdriver
     from selenium.webdriver.common.by import By
@@ -103,11 +100,17 @@ def wos(data_folder, query: str):
         ).click()
 
         time.sleep(10)
-        local_downloads_path = os.path.expanduser("~/Downloads")
+        download_directory = find_download_directory()
+        if download_directory:
+            pass
+        else:
+            print("Could not determine the download directory.")
+            return 0
+
         full_path_downloaded_files = []
-        for filename in os.listdir(local_downloads_path):
-            if filename.endswith(".xls"):
-                full_path_downloaded_files.append(local_downloads_path + "/" + filename)
+        for filename in os.listdir(download_directory):
+            if filename.startswith("savedrecs") and filename.endswith(".xls"):
+                full_path_downloaded_files.append(download_directory + "/" + filename)
         latest_file = max(full_path_downloaded_files, key=os.path.getctime)
         shutil.move(
             latest_file, os.path.join(tmp_xls_files, str(input_aera_index + 1) + ".xls")
@@ -124,94 +127,159 @@ def wos(data_folder, query: str):
 
     driver.quit()
 
-    print(f"Cleaning the results...")
-
     data = []
     for filename in os.listdir(tmp_xls_files):
         file_path = os.path.join(tmp_xls_files, filename)
         df = pd.read_excel(file_path)
         data.append(df)
     df = pd.concat(data)
+    size = len(df)
 
     shutil.rmtree(tmp_xls_files)
 
-    attributes_to_keep = [
-        "DOI",
-        "Article Title",
-        "Authors",
-        "Publication Year",
-        "Abstract",
-        "Author Keywords",
-        "Language",
-        "Affiliations",
-        "Source Title",
-        "Publisher",
-        "Volume",
-        "Issue",
+    wos_folder = os.path.join(data_folder, "wos")
+    os.makedirs(wos_folder)
+    wos_file = os.path.join(wos_folder, "data.pkl")
+    df.to_pickle(wos_file)
+    print(
+        f"\nRaw data of {size} papers from Web of Science Core Collection saved to {wos_file}."
+    )
+
+    return wos_file
+
+
+def dimensions(query: str):
+    """Quick description
+
+    Long description
+
+    Parameters:
+    query (str):
+
+    Returns:
+
+    """
+    pass
+
+
+def scrape(query: str, platforms: list[str]):
+    """Get publications from platforms specified
+
+    Scrape data from the results of a search query. Scrapping will be performed on each platform specified. Data will be stored in 'colibri/data'.
+
+    Parameters:
+    query (str): universal search query that will be used in each database platform specified in parameters.
+    platforms (list[str]): list of platforms that will be scrapped. Be careful of the sythax. Supported: ["WoS"]
+
+    Returns:
+    None
+    """
+
+    import sys
+    import os
+
+    sys.path.append("..")
+    import src
+
+    platform_map = {
+        "WoS": ["Web of Science Core Collection", src.scrapper.wos]
+    }  # To be completed when new platforms supported
+
+    if platforms == []:
+        print(
+            "Parameter 'platforms' is empty. At least one platform must be specified."
+        )
+    else:
+        valid_platforms = []
+        for platform in platforms:
+            if platform in platform_map:
+                valid_platforms.append(platform)
+            else:
+                print(
+                    f"'{platform}' is passed as a platform but not supported by colibri. Correct and re-run the function."
+                )
+                return 0
+
+        import pytz
+        import datetime
+        import os
+
+        platform_plotted = []
+        for platform in valid_platforms:
+            platform_plotted.append(str(platform_map.get(platform)[0]))
+
+        sentence_template = "You selected platform(s) {} to get the publications from."
+        formatted_sentence = sentence_template.format(", ".join(platform_plotted))
+        print(formatted_sentence)
+
+        utc_current_time = datetime.datetime.now(tz=pytz.timezone("UTC"))
+        utc_current_time_str = (
+            str(utc_current_time.year)
+            + "-"
+            + str(utc_current_time.month)
+            + "-"
+            + str(utc_current_time.day)
+            + "_"
+            + str(utc_current_time.hour)
+            + "-"
+            + str(utc_current_time.minute)
+            + "-"
+            + str(utc_current_time.second)
+        )
+
+        print(f"\nScrapping started at {utc_current_time_str} UTC.")
+
+        current_dir = os.getcwd()
+        target_folder = "colibri"
+        while os.path.basename(current_dir) != target_folder:
+            current_dir = os.path.dirname(current_dir)
+        data_folder = os.path.join(current_dir, "data/scrapped/" + utc_current_time_str)
+        os.makedirs(data_folder)
+
+        for platform in valid_platforms:
+            platform_map.get(platform)[1](data_folder, query)
+
+
+def find_download_directory():
+    import os
+
+    download_dirs = [
+        os.getenv("HOME"),  # Unix-like systems (Linux, macOS)
+        os.getenv("USERPROFILE"),  # Windows
+        os.getenv("XDG_DOWNLOAD_DIR"),  # XDG user directory (Linux)
+        os.getenv("DOWNLOAD_DIR"),  # Custom environment variable (if set)
+        os.path.expanduser("~/Downloads"),  # Fallback for Unix-like systems
     ]
-    size_before = len(df)
-    df = df[attributes_to_keep]
-    check_emptyness = ["DOI", "Article Title", "Abstract"]
-    df = df.dropna(subset=check_emptyness, how="all")
-    df = df.drop_duplicates()
-    df = df[df["DOI"].duplicated(keep=False) == False]
-    size_after = len(df)
-    size_diff = size_before - size_after
-    proportion = round(size_diff * 100 / size_before, 1)
-
-    print(
-        f"{size_diff} papers deleted ({proportion}%) because of lack of information or duplicates."
-    )
-
-    data_folder = os.path.join(current_dir, "data/scrapped/" + utc_current_time_str)
-    os.makedirs(data_folder)
-    data_file = os.path.join(data_folder, "metadata.pkl")
-    df.to_pickle(data_file)
-
-    print(
-        f"\nData of {size_after} papers from Web of Science Core Collection saved to {data_file}."
-    )
-
-    return data_file
+    for dir_path in download_dirs:
+        if dir_path and os.path.isdir(dir_path):
+            return dir_path
+    return None
 
 
-def get_metadata_scholar(query: str):
-    """Quick description
+# attributes_to_keep = [
+#     "DOI",
+#     "Article Title",
+#     "Authors",
+#     "Publication Year",
+#     "Abstract",
+#     "Author Keywords",
+#     "Language",
+#     "Affiliations",
+#     "Source Title",
+#     "Publisher",
+#     "Volume",
+#     "Issue",
+# ]
+# size_before = len(df)
+# df = df[attributes_to_keep]
+# check_emptyness = ["DOI", "Article Title", "Abstract"]
+# df = df.dropna(subset=check_emptyness, how="all")
+# df = df.drop_duplicates()
+# df = df[df["DOI"].duplicated(keep=False) == False]
+# size_after = len(df)
+# size_diff = size_before - size_after
+# proportion = round(size_diff * 100 / size_before, 1)
 
-    Long description
-
-    Parameters:
-    query (str):
-
-    Returns:
-
-    """
-    pass
-
-
-def get_metadata_scopus(query: str):
-    """Quick description
-
-    Long description
-
-    Parameters:
-    query (str):
-
-    Returns:
-
-    """
-    pass
-
-
-def get_pdf_scihub(metadata: str):
-    """Quick description
-
-    Long description
-
-    Parameters:
-    metadata (str):
-
-    Returns:
-
-    """
-    pass
+# print(
+#     f"{size_diff} papers deleted ({proportion}%) because of lack of information or duplicates."
+# )
