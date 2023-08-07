@@ -17,4 +17,4 @@ def run_pipeline(query: str, platforms: list[str]):
     sys.path.append("..")
     import src
 
-    src.scrapper.scrape(query, platforms)
+    scrapped_data_dir = src.scrapper.scrape(query, platforms)

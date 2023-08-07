@@ -1,4 +1,14 @@
-def wos(data_folder, query: str):
+import sys
+
+sys.path.append("..")
+import src
+
+PLATFORM_MAP = {
+    "WoS": ["Web of Science Core Collection", src.scrapper.wos]
+}  # To be completed when new platforms supported
+
+
+def wos(data_dir, query: str):
     """Get data (title, authors, DOI, etc.) of papers coming from Web of Science
 
     This function provides data of scientific articles coming from the results of a search query on Web of Science Core Collection (https://www.webofscience.com/wos/woscc/advanced-search).
@@ -33,7 +43,7 @@ def wos(data_folder, query: str):
     from selenium.webdriver.common.by import By
     from selenium.webdriver.firefox.options import Options
 
-    tmp_xls_files = os.path.join(data_folder, "tmp")
+    tmp_xls_files = os.path.join(data_dir, "tmp")
     os.makedirs(tmp_xls_files)
 
     url = "https://www.webofscience.com/wos/woscc/advanced-search"
@@ -101,9 +111,7 @@ def wos(data_folder, query: str):
 
         time.sleep(10)
         download_directory = find_download_directory()
-        if download_directory:
-            pass
-        else:
+        if not download_directory:
             print("Could not determine the download directory.")
             return 0
 
@@ -111,6 +119,7 @@ def wos(data_folder, query: str):
         for filename in os.listdir(download_directory):
             if filename.startswith("savedrecs") and filename.endswith(".xls"):
                 full_path_downloaded_files.append(download_directory + "/" + filename)
+
         latest_file = max(full_path_downloaded_files, key=os.path.getctime)
         shutil.move(
             latest_file, os.path.join(tmp_xls_files, str(input_aera_index + 1) + ".xls")
@@ -137,7 +146,7 @@ def wos(data_folder, query: str):
 
     shutil.rmtree(tmp_xls_files)
 
-    wos_folder = os.path.join(data_folder, "wos")
+    wos_folder = os.path.join(data_dir, "wos")
     os.makedirs(wos_folder)
     wos_file = os.path.join(wos_folder, "data.pkl")
     df.to_pickle(wos_file)
@@ -181,10 +190,6 @@ def scrape(query: str, platforms: list[str]):
     sys.path.append("..")
     import src
 
-    platform_map = {
-        "WoS": ["Web of Science Core Collection", src.scrapper.wos]
-    }  # To be completed when new platforms supported
-
     if platforms == []:
         print(
             "Parameter 'platforms' is empty. At least one platform must be specified."
@@ -192,7 +197,7 @@ def scrape(query: str, platforms: list[str]):
     else:
         valid_platforms = []
         for platform in platforms:
-            if platform in platform_map:
+            if platform in PLATFORM_MAP:
                 valid_platforms.append(platform)
             else:
                 print(
@@ -206,7 +211,7 @@ def scrape(query: str, platforms: list[str]):
 
         platform_plotted = []
         for platform in valid_platforms:
-            platform_plotted.append(str(platform_map.get(platform)[0]))
+            platform_plotted.append(str(PLATFORM_MAP.get(platform)[0]))
 
         sentence_template = "You selected platform(s) {} to get the publications from."
         formatted_sentence = sentence_template.format(", ".join(platform_plotted))
@@ -233,27 +238,50 @@ def scrape(query: str, platforms: list[str]):
         target_folder = "colibri"
         while os.path.basename(current_dir) != target_folder:
             current_dir = os.path.dirname(current_dir)
-        data_folder = os.path.join(current_dir, "data/scrapped/" + utc_current_time_str)
-        os.makedirs(data_folder)
+        data_dir = os.path.join(current_dir, "data/scrapped/" + utc_current_time_str)
+        os.makedirs(data_dir)
 
         for platform in valid_platforms:
-            platform_map.get(platform)[1](data_folder, query)
+            PLATFORM_MAP.get(platform)[1](data_dir, query)
+
+    return data_dir
 
 
 def find_download_directory():
     import os
 
-    download_dirs = [
-        os.getenv("HOME"),  # Unix-like systems (Linux, macOS)
-        os.getenv("USERPROFILE"),  # Windows
-        os.getenv("XDG_DOWNLOAD_DIR"),  # XDG user directory (Linux)
-        os.getenv("DOWNLOAD_DIR"),  # Custom environment variable (if set)
-        os.path.expanduser("~/Downloads"),  # Fallback for Unix-like systems
-    ]
+    if os.name == "nt":  # Windows
+        download_dirs = [os.getenv("DOWNLOAD_DIR")]
+    else:  # Unix-like
+        download_dirs = [
+            os.path.expanduser("~/Downloads"),  # Fallback for Unix-like systems
+            os.getenv("XDG_DOWNLOAD_DIR"),  # XDG user directory (Linux)
+            os.getenv("DOWNLOAD_DIR"),  # Custom environment variable (if set)
+        ]
+
     for dir_path in download_dirs:
         if dir_path and os.path.isdir(dir_path):
             return dir_path
     return None
+
+
+def merge_clean(data_dir):
+    import os
+    import pandas as pd
+
+    platform_plotted = []
+    data = []
+    for dir in os.listdir(data_dir):
+        platform_plotted.append(str(dir))
+        file_path = os.path.join(dir, "data.pkl")
+        df = pd.read_pickle(file_path)
+        data.append(df)
+    df = pd.concat(data)
+
+    sentence_template = "Data coming from {} are cleaned and merged into file {}."
+    formatted_sentence = sentence_template.format(", ".join(platform_plotted))
+    print(formatted_sentence)
+    print("")
 
 
 # attributes_to_keep = [
