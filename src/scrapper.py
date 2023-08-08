@@ -3,9 +3,103 @@ import sys
 sys.path.append("..")
 import src
 
+# /!\ To be completed when new platforms supported
 PLATFORM_MAP = {
-    "WoS": ["Web of Science Core Collection", src.scrapper.wos]
-}  # To be completed when new platforms supported
+    "WoS": [
+        "Web of Science Core Collection",
+        src.scrapper.wos,
+        {
+            "DOI": "DOI",
+            "Article Title": "Title",
+            "Abstract": "Abstract",
+            "Author Keywords": "Keywords",
+        },
+    ]
+}
+
+
+def find_download_directory():
+    """Quick description
+
+    Long description
+
+    Parameters:
+    query (str):
+
+    Returns:
+
+    """
+
+    import os
+
+    if os.name == "nt":  # Windows
+        download_dirs = [os.getenv("DOWNLOAD_DIR")]
+    else:  # Unix-like
+        download_dirs = [
+            os.path.expanduser("~/Downloads"),  # Fallback for Unix-like systems
+            os.getenv("XDG_DOWNLOAD_DIR"),  # XDG user directory (Linux)
+            os.getenv("DOWNLOAD_DIR"),  # Custom environment variable (if set)
+        ]
+
+    for dir_path in download_dirs:
+        if dir_path and os.path.isdir(dir_path):
+            return dir_path
+    return None
+
+
+def merger_cleaner(data_dir):
+    """Quick description
+
+    Long description
+
+    Parameters:
+    query (str):
+
+    Returns:
+
+    """
+
+    import os
+    import pandas as pd
+
+    platform_plotted = []
+    data = []
+    for platform in os.listdir(data_dir):
+        platform_plotted.append(str(platform))
+        file_path = os.path.join(data_dir, platform, "data.pkl")
+        df = pd.read_pickle(file_path)
+        df = df.loc[:, PLATFORM_MAP.get(platform)[2].keys()]
+        df = df.rename(columns=PLATFORM_MAP.get(platform)[2])
+        df.insert(0, "Platform", str(platform))
+        data.append(df)
+
+    df = pd.concat(data)
+    size_before = len(df)
+    print(f"{size_before} papers merged into in a single DataFrame.")
+
+    check_emptyness = ["DOI", "Title", "Abstract"]
+    df = df.dropna(subset=check_emptyness, how="all")
+    df = df.drop_duplicates()
+    df = df[df["DOI"].duplicated(keep=False) == False]
+    size_after = len(df)
+    size_diff = size_before - size_after
+    proportion = round(size_diff * 100 / size_before, 1)
+
+    print(
+        f"{size_diff} papers deleted ({proportion}%) because of lack of information or duplicates."
+    )
+
+    merged_cleaned_dir = data_dir.replace("scrapped", "merged_cleaned")
+    os.makedirs(merged_cleaned_dir)
+    merge_clean_file = os.path.join(merged_cleaned_dir, "data.pkl")
+    df.to_pickle(merge_clean_file)
+
+    print(
+        f"Data coming from the selected platform(s) are cleaned and merged into file {merge_clean_file} ."
+    )
+    print("Data ready to be passed into phase II.")
+
+    return merge_clean_file
 
 
 def wos(data_dir, query: str):
@@ -72,6 +166,17 @@ def wos(data_dir, query: str):
     print(f"Found {nb_results} papers.")
 
     def downloader(input_aera_index, sent_key_low, sent_key_high):
+        """Quick description
+
+        Long description
+
+        Parameters:
+        query (str):
+
+        Returns:
+
+        """
+
         time.sleep(5)
         driver.find_element(
             By.XPATH,
@@ -146,7 +251,7 @@ def wos(data_dir, query: str):
 
     shutil.rmtree(tmp_xls_files)
 
-    wos_folder = os.path.join(data_dir, "wos")
+    wos_folder = os.path.join(data_dir, "WoS")
     os.makedirs(wos_folder)
     wos_file = os.path.join(wos_folder, "data.pkl")
     df.to_pickle(wos_file)
@@ -245,69 +350,3 @@ def scrape(query: str, platforms: list[str]):
             PLATFORM_MAP.get(platform)[1](data_dir, query)
 
     return data_dir
-
-
-def find_download_directory():
-    import os
-
-    if os.name == "nt":  # Windows
-        download_dirs = [os.getenv("DOWNLOAD_DIR")]
-    else:  # Unix-like
-        download_dirs = [
-            os.path.expanduser("~/Downloads"),  # Fallback for Unix-like systems
-            os.getenv("XDG_DOWNLOAD_DIR"),  # XDG user directory (Linux)
-            os.getenv("DOWNLOAD_DIR"),  # Custom environment variable (if set)
-        ]
-
-    for dir_path in download_dirs:
-        if dir_path and os.path.isdir(dir_path):
-            return dir_path
-    return None
-
-
-def merge_clean(data_dir):
-    import os
-    import pandas as pd
-
-    platform_plotted = []
-    data = []
-    for dir in os.listdir(data_dir):
-        platform_plotted.append(str(dir))
-        file_path = os.path.join(dir, "data.pkl")
-        df = pd.read_pickle(file_path)
-        data.append(df)
-    df = pd.concat(data)
-
-    sentence_template = "Data coming from {} are cleaned and merged into file {}."
-    formatted_sentence = sentence_template.format(", ".join(platform_plotted))
-    print(formatted_sentence)
-    print("")
-
-
-# attributes_to_keep = [
-#     "DOI",
-#     "Article Title",
-#     "Authors",
-#     "Publication Year",
-#     "Abstract",
-#     "Author Keywords",
-#     "Language",
-#     "Affiliations",
-#     "Source Title",
-#     "Publisher",
-#     "Volume",
-#     "Issue",
-# ]
-# size_before = len(df)
-# df = df[attributes_to_keep]
-# check_emptyness = ["DOI", "Article Title", "Abstract"]
-# df = df.dropna(subset=check_emptyness, how="all")
-# df = df.drop_duplicates()
-# df = df[df["DOI"].duplicated(keep=False) == False]
-# size_after = len(df)
-# size_diff = size_before - size_after
-# proportion = round(size_diff * 100 / size_before, 1)
-
-# print(
-#     f"{size_diff} papers deleted ({proportion}%) because of lack of information or duplicates."
-# )

@@ -12,9 +12,13 @@ def run_pipeline(query: str, platforms: list[str]):
     """
     print("\033[1m\U0001F426 Welcome to the pipeline of colibri!\033[0m")
 
-    import sys
+    # import sys
 
-    sys.path.append("..")
-    import src
+    # sys.path.append("..")
+    # import src
 
+    print("\n\033[1mPhase I - Scrapping\033[0m")
     scrapped_data_dir = src.scrapper.scrape(query, platforms)
+    merged_cleaned_dir = src.scrapper.merger_cleaner(scrapped_data_dir)
+
+    print("\n\033[1mPhase II - Filtering\033[0m")
