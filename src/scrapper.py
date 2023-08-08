@@ -1,23 +1,3 @@
-import sys
-
-sys.path.append("..")
-import src
-
-# /!\ To be completed when new platforms supported
-PLATFORM_MAP = {
-    "WoS": [
-        "Web of Science Core Collection",
-        src.scrapper.wos,
-        {
-            "DOI": "DOI",
-            "Article Title": "Title",
-            "Abstract": "Abstract",
-            "Author Keywords": "Keywords",
-        },
-    ]
-}
-
-
 def find_download_directory():
     """Quick description
 
@@ -47,7 +27,7 @@ def find_download_directory():
     return None
 
 
-def merger_cleaner(data_dir):
+def merger_cleaner(data_dir, PLATFORM_MAP):
     """Quick description
 
     Long description
@@ -276,7 +256,7 @@ def dimensions(query: str):
     pass
 
 
-def scrape(query: str, platforms: list[str]):
+def scrape(query: str, platforms: list[str], PLATFORM_MAP):
     """Get publications from platforms specified
 
     Scrape data from the results of a search query. Scrapping will be performed on each platform specified. Data will be stored in 'colibri/data'.
@@ -288,12 +268,6 @@ def scrape(query: str, platforms: list[str]):
     Returns:
     None
     """
-
-    import sys
-    import os
-
-    sys.path.append("..")
-    import src
 
     if platforms == []:
         print(
