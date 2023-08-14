@@ -242,20 +242,6 @@ def wos(data_dir, query: str):
     return wos_file
 
 
-def dimensions(query: str):
-    """Quick description
-
-    Long description
-
-    Parameters:
-    query (str):
-
-    Returns:
-
-    """
-    pass
-
-
 def scrape(query: str, platforms: list[str], PLATFORM_MAP):
     """Get publications from platforms specified
 
