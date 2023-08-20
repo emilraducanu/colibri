@@ -10,7 +10,7 @@ def distilbert(
 
     Long description
 
-    Parameters:
+    Parameters: toto
     query (str):
 
     Returns:
