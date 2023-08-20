@@ -1,0 +1,17 @@
+name: colibri
+channels:
+  - defaults
+  - conda-forge
+  - anaconda
+dependencies:
+  - python=3.8
+  - jupyter
+  - pandas
+  - selenium
+  - requests
+  - black
+  - os
+  - shutil
+  - time
+  - pytz
+  - datetime
