@@ -10,8 +10,5 @@ dependencies:
   - selenium
   - requests
   - black
-  - os
-  - shutil
   - time
   - pytz
-  - datetime
