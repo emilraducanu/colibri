@@ -36,7 +36,6 @@ git clone https://github.com/emilraducanu/colibri.git
 cd colibri
 conda env create -f environment.yml
 conda activate colibri
-pip install -e .
 ```
 To properly use Selenium (automation of web browsing), you need to download the Driver corresponding to the default web browser of your system. To do so, you can follow the steps of this link:
 
