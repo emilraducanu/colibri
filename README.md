@@ -32,6 +32,8 @@ Before setting up the environment, make sure you have `conda` installed on your 
 
 To set up the environment and install the required dependencies, run the following commands:
 ```bash
+git clone https://github.com/emilraducanu/colibri.git
+cd colibri
 conda env create -f env.yml
 conda activate colibri
 pip install -e .
