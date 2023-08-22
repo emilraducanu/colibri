@@ -1,10 +1,12 @@
-def distilbert(
+def train_distilbert(
     epochs: int,
-    batch_size_: int,
+    batch_size: int,
     learning_rate: float,
     dropout: float,
     padding_length: int,
     testset_size: float,
+    distilbert_trainset_path: str,
+    saved_model_path: str,
 ):
     """Quick description
 
@@ -33,7 +35,7 @@ def distilbert(
     model = DistilBertModel.from_pretrained(model_name)
 
     # Convert columns to list
-    df = pd.read_pickle("/home/er/Documents/Cirad/colibri/data/trainset/trainset.pkl")
+    df = pd.read_pickle(distilbert_trainset_path)
     titles = df["Title"].tolist()
     abstracts = df["Abstract"].tolist()
     keywords = df["Keywords"].tolist()
@@ -132,19 +134,19 @@ def distilbert(
     )
 
     train_titles_dataloader = DataLoader(
-        train_titles_dataset, batch_size=batch_size_, shuffle=True
+        train_titles_dataset, batch_size=batch_size, shuffle=True
     )
-    val_titles_dataloader = DataLoader(val_titles_dataset, batch_size=batch_size_)
+    val_titles_dataloader = DataLoader(val_titles_dataset, batch_size=batch_size)
 
     train_abstracts_dataloader = DataLoader(
-        train_abstracts_dataset, batch_size=batch_size_, shuffle=True
+        train_abstracts_dataset, batch_size=batch_size, shuffle=True
     )
-    val_abstracts_dataloader = DataLoader(val_abstracts_dataset, batch_size=batch_size_)
+    val_abstracts_dataloader = DataLoader(val_abstracts_dataset, batch_size=batch_size)
 
     train_keywords_dataloader = DataLoader(
-        train_keywords_dataset, batch_size=batch_size_, shuffle=True
+        train_keywords_dataset, batch_size=batch_size, shuffle=True
     )
-    val_keywords_dataloader = DataLoader(val_keywords_dataset, batch_size=batch_size_)
+    val_keywords_dataloader = DataLoader(val_keywords_dataset, batch_size=batch_size)
 
     # Define the classification heads
     titles_classification_head = nn.Sequential(
@@ -380,6 +382,6 @@ def distilbert(
         print(f"Epoch {epoch + 1}/{num_epochs} - Validation F1-score: {avg_f1:.4f}")
 
     # Save the fine-tuned model
-    torch.save(model.state_dict(), "fine_tuned_model.pt")
+    torch.save(model.state_dict(), saved_model_path)
 
     return avg_f1

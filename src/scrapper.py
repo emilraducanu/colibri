@@ -69,9 +69,9 @@ def merger_cleaner(data_dir, PLATFORM_MAP):
         f"{size_diff} papers deleted ({proportion}%) because of lack of information or duplicates."
     )
 
-    merged_cleaned_dir = data_dir.replace("scrapped", "merged_cleaned")
-    os.makedirs(merged_cleaned_dir)
-    merge_clean_file = os.path.join(merged_cleaned_dir, "data.pkl")
+    merged_cleaned_pub_dir = data_dir.replace("scrapped_pub", "merged_cleaned_pub")
+    os.makedirs(merged_cleaned_pub_dir)
+    merge_clean_file = os.path.join(merged_cleaned_pub_dir, "data.pkl")
     df.to_pickle(merge_clean_file)
 
     print(
@@ -303,7 +303,9 @@ def scrape(query: str, platforms: list[str], PLATFORM_MAP):
         target_folder = "colibri"
         while os.path.basename(current_dir) != target_folder:
             current_dir = os.path.dirname(current_dir)
-        data_dir = os.path.join(current_dir, "data/scrapped/" + utc_current_time_str)
+        data_dir = os.path.join(
+            current_dir, "data/scrapped_pub/" + utc_current_time_str
+        )
         os.makedirs(data_dir)
 
         for platform in valid_platforms:

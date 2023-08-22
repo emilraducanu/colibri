@@ -32,7 +32,9 @@ def run_pipeline(query: str, platforms: list[str]):
     }
 
     print("\n\033[1mPhase I - Scrapping\033[0m")
-    scrapped_data_dir = src.scrapper.scrape(query, platforms, PLATFORM_MAP)
-    merged_cleaned_dir = src.scrapper.merger_cleaner(scrapped_data_dir, PLATFORM_MAP)
+    scrapped_pub_data_dir = src.scrapper.scrape(query, platforms, PLATFORM_MAP)
+    merged_cleaned_pub_dir = src.scrapper.merger_cleaner(
+        scrapped_pub_data_dir, PLATFORM_MAP
+    )
 
     print("\n\033[1mPhase II - Filtering\033[0m")
