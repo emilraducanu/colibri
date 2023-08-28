@@ -1,0 +1,1 @@
+{"epochs": 50, "batch_size": 300, "learning_rate": 1e-05, "dropout": 0.6, "padding_length": 100, "testset_size": 0.2, "distilbert_trainset_path": "/home/er/Documents/Cirad/colibri/data/distilbert_trainset/trainset.pkl", "last_f1_score": 0.43214285714285716, "run_duration": 2328.5178277492523}
