@@ -10,5 +10,17 @@ dependencies:
   - selenium
   - requests
   - black
+  - os
+  - shutil
   - time
   - pytz
+  - datetime
+  - numpy
+  - torch
+  - transformers
+  - sklearn
+  - tqdm
+  - json
+  - matplotlib
+  - seaborn
+  - statsmodels
