@@ -12,29 +12,13 @@ def run_pipeline(query: str, platforms: list[str]):
     """
     print("\033[1m\U0001F426 Welcome to the pipeline of colibri!\033[0m")
 
-    import sys
+    from sys import path
 
-    sys.path.append("..")
-    import src
-
-    # /!\ To be completed when new platforms supported
-    PLATFORM_MAP = {
-        "WoS": [
-            "Web of Science Core Collection",
-            src.scrapper.wos,
-            {
-                "DOI": "DOI",
-                "Article Title": "Title",
-                "Abstract": "Abstract",
-                "Author Keywords": "Keywords",
-            },
-        ]
-    }
+    path.append("..")
+    from src.scrapper import scrape, merger_cleaner
 
     print("\n\033[1mPhase I - Scrapping\033[0m")
-    scrapped_pub_data_dir = src.scrapper.scrape(query, platforms, PLATFORM_MAP)
-    merged_cleaned_pub_dir = src.scrapper.merger_cleaner(
-        scrapped_pub_data_dir, PLATFORM_MAP
-    )
+    scrapped_pub_data_dir = scrape(query, platforms)
+    merged_cleaned_pub_dir = merger_cleaner(scrapped_pub_data_dir)
 
     print("\n\033[1mPhase II - Filtering\033[0m")

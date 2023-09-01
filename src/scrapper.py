@@ -27,7 +27,7 @@ def find_download_directory():
     return None
 
 
-def merger_cleaner(data_dir, PLATFORM_MAP):
+def merger_cleaner(data_dir):
     """Quick description
 
     Long description
@@ -41,6 +41,7 @@ def merger_cleaner(data_dir, PLATFORM_MAP):
 
     import os
     import pandas as pd
+    from src.glob_var import PLATFORM_MAP
 
     platform_plotted = []
     data = []
@@ -242,7 +243,7 @@ def wos(data_dir, query: str):
     return wos_file
 
 
-def scrape(query: str, platforms: list[str], PLATFORM_MAP):
+def scrape(query: str, platforms: list[str]):
     """Get publications from platforms specified
 
     Scrape data from the results of a search query. Scrapping will be performed on each platform specified. Data will be stored in 'colibri/data'.
@@ -254,6 +255,7 @@ def scrape(query: str, platforms: list[str], PLATFORM_MAP):
     Returns:
     None
     """
+    from src.glob_var import PLATFORM_MAP
 
     if platforms == []:
         print(

@@ -15,3 +15,12 @@ dependencies:
   - time
   - pytz
   - datetime
+  - numpy
+  - torch
+  - transformers
+  - sklearn
+  - tqdm
+  - json
+  - matplotlib
+  - seaborn
+  - statsmodels
