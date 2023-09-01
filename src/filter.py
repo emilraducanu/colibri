@@ -1,24 +1,18 @@
-def train_distilbert(
-    epochs: int,
-    batch_size: int,
-    learning_rate: float,
-    dropout: float,
-    padding_length: int,
-    testset_size: float,
-    distilbert_trainset_path: str,
-    saved_model_path: str,
-):
+# Version 5 (titles, abstracts, keywords merged with features of saving the config/perf of the model,
+# saving confusion matrix, saving evolution of F1 score through epochs, visualise predictions)
+
+
+def train_distilbert_v4(config):
     """Quick description
 
     Long description
 
-    Parameters: toto
+    Parameters:
     query (str):
 
     Returns:
 
     """
-
     import numpy as np
     import pandas as pd
     import torch
@@ -28,360 +22,234 @@ def train_distilbert(
     from torch.utils.data import TensorDataset, DataLoader
     from tqdm import tqdm
     from sklearn.metrics import f1_score
+    import pytz
+    import datetime
+    import time
+    import os
+    import json
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    from sklearn.metrics import confusion_matrix
 
-    # Load pre-trained DistilBERT model and tokenizer
+    start_time = time.time()
+
+    # Create timestamp
+    utc_current_time = datetime.datetime.now(tz=pytz.timezone("UTC"))
+    utc_current_time_str = utc_current_time_str = utc_current_time.strftime(
+        "%Y-%m-%d_%H-%M-%S"
+    )
+
+    # Create output dir
+    current_dir = os.getcwd()
+    target_folder = "colibri"
+    while os.path.basename(current_dir) != target_folder:
+        current_dir = os.path.dirname(current_dir)
+    data_dir = os.path.join(current_dir, "data/distilbert_runs/" + utc_current_time_str)
+    os.makedirs(data_dir)
+
+    # Define device (GPU is available, CPU otherwise)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Load model and tokenizer
     model_name = "distilbert-base-uncased"
     tokenizer = DistilBertTokenizer.from_pretrained(model_name)
     model = DistilBertModel.from_pretrained(model_name)
 
-    # Convert columns to list
-    df = pd.read_pickle(distilbert_trainset_path)
-    titles = df["Title"].tolist()
-    abstracts = df["Abstract"].tolist()
-    keywords = df["Keywords"].tolist()
+    # Custom tokenizer vocabulary
+    new_tokens = [
+        "SOC",
+        "SOM",
+        "meta-analysis",
+        "metaanalysis",
+        "meta-analyses",
+        "metaanalyses",
+    ]
+    tokenizer.add_tokens(new_tokens)
+    model.resize_token_embeddings(len(tokenizer))
 
-    # Tokenize and encode the titles, abstracts, and keywords
-    titles = tokenizer(
-        titles,
+    # Import training set
+    df = pd.read_pickle(config["distilbert_trainset_path"])
+    df["Text"] = df["Title"] + " " + df["Abstract"] + " " + df["Keywords"]
+    df["Text"] = df["Text"].astype(str)
+    text_list = df["Text"].tolist()
+    df = df[["Screening", "Text"]]
+
+    # Tokenize and encode the text
+    text = tokenizer(
+        text_list,
         padding="max_length",
         truncation=True,
-        max_length=padding_length,
-        return_tensors="pt",
-    )
-    abstracts = tokenizer(
-        abstracts,
-        padding="max_length",
-        truncation=True,
-        max_length=padding_length,
-        return_tensors="pt",
-    )
-    keywords = tokenizer(
-        keywords,
-        padding="max_length",
-        truncation=True,
-        max_length=padding_length,
+        max_length=config["padding_length"],
         return_tensors="pt",
     )
 
-    # Create attention masks for each input
-    titles_attention_masks = titles["attention_mask"]
-    abstracts_attention_masks = abstracts["attention_mask"]
-    keywords_attention_masks = keywords["attention_mask"]
+    # Create attention masks
+    attention_masks = text["attention_mask"]
 
-    # Prepare labels (assuming 'Screening' column has 'included' and 'excluded' values)
+    # Prepare labels
     labels = torch.tensor(df["Screening"].map({"included": 1, "excluded": 0}).values)
 
     # Split data into training and validation sets
     (
-        train_titles,
-        val_titles,
-        train_titles_attention_mask,
-        val_titles_attention_mask,
+        train_text,
+        val_text,
+        train_attention_masks,
+        val_attention_masks,
         train_labels,
         val_labels,
     ) = train_test_split(
-        titles["input_ids"],
-        titles_attention_masks,
+        text["input_ids"],
+        attention_masks,
         labels,
-        test_size=testset_size,
+        test_size=config["testset_size"],
         random_state=42,
-    )
-
-    (
-        train_abstracts,
-        val_abstracts,
-        train_abstracts_attention_mask,
-        val_abstracts_attention_mask,
-    ) = train_test_split(
-        abstracts["input_ids"],
-        abstracts_attention_masks,
-        test_size=testset_size,
-        random_state=42,
-    )
-
-    (
-        train_keywords,
-        val_keywords,
-        train_keywords_attention_mask,
-        val_keywords_attention_mask,
-    ) = train_test_split(
-        keywords["input_ids"],
-        keywords_attention_masks,
-        test_size=testset_size,
-        random_state=42,
+        shuffle=False,
     )
 
     # Create DataLoader for training and validation sets for each input type
-    train_titles_dataset = TensorDataset(
-        train_titles, train_titles_attention_mask, train_labels
+    train_dataset = TensorDataset(train_text, train_attention_masks, train_labels)
+    val_dataset = TensorDataset(val_text, val_attention_masks, val_labels)
+    train_dataloader = DataLoader(
+        train_dataset, batch_size=config["batch_size"], shuffle=True
     )
-    val_titles_dataset = TensorDataset(
-        val_titles, val_titles_attention_mask, val_labels
-    )
+    val_dataloader = DataLoader(val_dataset, batch_size=config["batch_size"])
 
-    train_abstracts_dataset = TensorDataset(
-        train_abstracts, train_abstracts_attention_mask, train_labels
-    )
-    val_abstracts_dataset = TensorDataset(
-        val_abstracts, val_abstracts_attention_mask, val_labels
-    )
-
-    train_keywords_dataset = TensorDataset(
-        train_keywords, train_keywords_attention_mask, train_labels
-    )
-    val_keywords_dataset = TensorDataset(
-        val_keywords, val_keywords_attention_mask, val_labels
-    )
-
-    train_titles_dataloader = DataLoader(
-        train_titles_dataset, batch_size=batch_size, shuffle=True
-    )
-    val_titles_dataloader = DataLoader(val_titles_dataset, batch_size=batch_size)
-
-    train_abstracts_dataloader = DataLoader(
-        train_abstracts_dataset, batch_size=batch_size, shuffle=True
-    )
-    val_abstracts_dataloader = DataLoader(val_abstracts_dataset, batch_size=batch_size)
-
-    train_keywords_dataloader = DataLoader(
-        train_keywords_dataset, batch_size=batch_size, shuffle=True
-    )
-    val_keywords_dataloader = DataLoader(val_keywords_dataset, batch_size=batch_size)
-
-    # Define the classification heads
-    titles_classification_head = nn.Sequential(
+    # Define the classification head
+    classification_head = nn.Sequential(
         nn.Linear(model.config.hidden_size, 64),
         nn.ReLU(),
-        nn.Dropout(dropout),
+        nn.Dropout(config["dropout"]),
         nn.Linear(64, 2),
     )
 
-    abstracts_classification_head = nn.Sequential(
-        nn.Linear(model.config.hidden_size, 64),
-        nn.ReLU(),
-        nn.Dropout(dropout),
-        nn.Linear(64, 2),
-    )
-
-    keywords_classification_head = nn.Sequential(
-        nn.Linear(model.config.hidden_size, 64),
-        nn.ReLU(),
-        nn.Dropout(dropout),
-        nn.Linear(64, 2),
-    )
-
+    # Define the loss function
     loss_fn = nn.CrossEntropyLoss()
 
-    # Define the optimizers for each classification head
-    optimizer_titles = torch.optim.AdamW(
-        titles_classification_head.parameters(), lr=learning_rate
-    )
-    optimizer_abstracts = torch.optim.AdamW(
-        abstracts_classification_head.parameters(), lr=learning_rate
-    )
-    optimizer_keywords = torch.optim.AdamW(
-        keywords_classification_head.parameters(), lr=learning_rate
+    # Define the optimizer
+    optimizer = torch.optim.AdamW(
+        classification_head.parameters(), lr=config["learning_rate"]
     )
 
-    # Training loop
-    num_epochs = epochs
+    # TRAINING LOOP
+    num_epochs = config["epochs"]
+    f1_scores_over_epochs = []
     for epoch in range(num_epochs):
         model.train()
         train_loss = 0.0
 
-        # Create a tqdm progress bar for the training loop
+        # Create progress bar for the training loop
         train_progress_bar = tqdm(
-            zip(
-                train_titles_dataloader,
-                train_abstracts_dataloader,
-                train_keywords_dataloader,
-                train_labels,
-            ),
-            total=len(train_titles_dataloader),
+            train_dataloader,
+            total=len(train_dataloader),
             desc=f"Epoch {epoch + 1}/{num_epochs} (Training)",
             leave=False,
         )
+        for i in train_progress_bar:
+            # Unpack data
+            (batch_text, batch_attention_masks, batch_labels) = i
+            optimizer.zero_grad()
 
-        for (
-            batch_titles,
-            batch_abstracts,
-            batch_keywords,
-            batch_labels,
-        ) in train_progress_bar:
-            (
-                batch_titles,
-                batch_titles_attention_mask,
-                batch_labels_titles,
-            ) = batch_titles
-            (
-                batch_abstracts,
-                batch_abstracts_attention_mask,
-                batch_labels_abstracts,
-            ) = batch_abstracts
-            (
-                batch_keywords,
-                batch_keywords_attention_mask,
-                batch_labels_keywords,
-            ) = batch_keywords
-
-            optimizer_titles.zero_grad()
-            optimizer_abstracts.zero_grad()
-            optimizer_keywords.zero_grad()
-
+            # Training of the model
             with torch.no_grad():
-                titles_outputs = model(
-                    input_ids=batch_titles, attention_mask=batch_titles_attention_mask
-                )
-                abstracts_outputs = model(
-                    input_ids=batch_abstracts,
-                    attention_mask=batch_abstracts_attention_mask,
-                )
-                keywords_outputs = model(
-                    input_ids=batch_keywords,
-                    attention_mask=batch_keywords_attention_mask,
+                text_outputs = model(
+                    input_ids=batch_text, attention_mask=batch_attention_masks
                 )
 
-            titles_logits = titles_classification_head(
-                titles_outputs.last_hidden_state[:, 0, :]
-            )
-            abstracts_logits = abstracts_classification_head(
-                abstracts_outputs.last_hidden_state[:, 0, :]
-            )
-            keywords_logits = keywords_classification_head(
-                keywords_outputs.last_hidden_state[:, 0, :]
-            )
-
-            combined_logits = titles_logits + abstracts_logits + keywords_logits
-
-            loss_titles = loss_fn(titles_logits, batch_labels_titles)
-            loss_abstracts = loss_fn(abstracts_logits, batch_labels_abstracts)
-            loss_keywords = loss_fn(keywords_logits, batch_labels_keywords)
-            loss = loss_titles + loss_abstracts + loss_keywords
+            text_logits = classification_head(text_outputs.last_hidden_state[:, 0, :])
+            loss = loss_fn(text_logits, batch_labels)
             loss.backward()
-
-            optimizer_titles.step()
-            optimizer_abstracts.step()
-            optimizer_keywords.step()
-
+            optimizer.step()
             train_loss += loss.item()
 
-        # Update the tqdm progress bar description with average loss
+        # Update progress bar
         train_progress_bar.set_postfix(
-            train_loss=f"{train_loss / len(train_titles_dataloader):.4f}"
+            train_loss=f"{train_loss / len(train_dataloader):.4f}"
         )
 
-        # Validation loop
+        # VALIDATION LOOP
         model.eval()
-        val_loss = 0.0
-        f1_scores = []
+        predictions = [[], [], []]
 
-        # Create a tqdm progress bar for the validation loop
+        # Create progress bar for the validation loop
         val_progress_bar = tqdm(
-            zip(
-                val_titles_dataloader,
-                val_abstracts_dataloader,
-                val_keywords_dataloader,
-                val_labels,
-            ),
-            total=len(val_titles_dataloader),
+            val_dataloader,
+            total=len(val_dataloader),
             desc=f"Epoch {epoch + 1}/{num_epochs} (Validation)",
             leave=False,
         )
 
-        # Check if GPU is available and set the device
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        for i in val_progress_bar:
+            # Unpack data
+            (batch_text, batch_attention_masks, batch_labels) = i
 
-        with torch.no_grad():
-            for (
-                batch_titles,
-                batch_abstracts,
-                batch_keywords,
-                batch_labels,
-            ) in val_progress_bar:
-                # Unpack the data for each input type
-                (
-                    titles_input_ids,
-                    titles_attention_mask,
-                    batch_labels_titles,
-                ) = batch_titles
-                (
-                    abstracts_input_ids,
-                    abstracts_attention_mask,
-                    batch_labels_abstracts,
-                ) = batch_abstracts
-                (
-                    keywords_input_ids,
-                    keywords_attention_mask,
-                    batch_labels_keywords,
-                ) = batch_keywords
+            # Send labels to the device
+            batch_labels = batch_labels.to(device)
 
-                # Send labels to the device
-                batch_labels_titles = batch_labels_titles.to(device)
-                batch_labels_abstracts = batch_labels_abstracts.to(device)
-                batch_labels_keywords = batch_labels_keywords.to(device)
-
-                titles_outputs = model(
-                    input_ids=titles_input_ids.to(device),
-                    attention_mask=titles_attention_mask.to(device),
-                )
-                abstracts_outputs = model(
-                    input_ids=abstracts_input_ids.to(device),
-                    attention_mask=abstracts_attention_mask.to(device),
-                )
-                keywords_outputs = model(
-                    input_ids=keywords_input_ids.to(device),
-                    attention_mask=keywords_attention_mask.to(device),
+            with torch.no_grad():
+                # Validation of the model
+                outputs = model(
+                    input_ids=batch_text.to(device),
+                    attention_mask=batch_attention_masks.to(device),
                 )
 
-                titles_logits = titles_classification_head(
-                    titles_outputs.last_hidden_state[:, 0, :]
-                )
-                abstracts_logits = abstracts_classification_head(
-                    abstracts_outputs.last_hidden_state[:, 0, :]
-                )
-                keywords_logits = keywords_classification_head(
-                    keywords_outputs.last_hidden_state[:, 0, :]
-                )
+            logits = classification_head(outputs.last_hidden_state[:, 0, :])
+            _, predicted = torch.max(logits, 1)
+            for index, tsr in enumerate(batch_labels):
+                predictions[0].append(tsr.item())
+            for index, tsr in enumerate(predicted):
+                predictions[1].append(tsr.item())
 
-                # Calculate the overall logits by combining the logits from different input types
-                combined_logits = (
-                    titles_logits + abstracts_logits + keywords_logits
-                ) / 3
+        # Calculate F1-score
+        current_epoch_f1_score = f1_score(
+            predictions[0], predictions[1], zero_division=1, average="weighted"
+        )
+        f1_scores_over_epochs.append(current_epoch_f1_score)
 
-                # Convert predictions to NumPy array
-                _, predicted = torch.max(combined_logits, 1)
-                predicted = predicted.cpu().numpy()
-
-                # Calculate F1-score for each batch
-                f1 = f1_score(
-                    batch_labels_titles.cpu(),
-                    predicted,
-                    average="macro",
-                    zero_division=1,
-                )
-                f1_scores.append(f1)
-
-                # Calculate the loss for each input type
-                loss_titles = loss_fn(titles_logits, batch_labels_titles)
-                loss_abstracts = loss_fn(abstracts_logits, batch_labels_abstracts)
-                loss_keywords = loss_fn(keywords_logits, batch_labels_keywords)
-
-                # Calculate the total loss as a combination of losses from different input types
-                loss = loss_titles + loss_abstracts + loss_keywords
-                val_loss += loss.item()
-
-        avg_val_loss = val_loss / len(val_titles_dataloader)
-        avg_f1 = np.mean(f1_scores)
-
-        # Update the tqdm progress bar description with validation results
-        val_progress_bar.set_postfix(
-            val_loss=f"{avg_val_loss:.4f}", f1_score=f"{avg_f1:.4f}"
+        # Update progress bar description with validation results
+        val_progress_bar.set_postfix(f1_score=f"{current_epoch_f1_score:.4f}")
+        print(
+            f"Epoch {epoch + 1}/{num_epochs} - Validation F1-score: {current_epoch_f1_score:.4f}"
         )
 
-        # Print the F1-score at the end of each epoch
-        print(f"Epoch {epoch + 1}/{num_epochs} - Validation F1-score: {avg_f1:.4f}")
-
     # Save the fine-tuned model
+    saved_model_path = os.path.join(data_dir, "fine_tuned_model.pt")
     torch.save(model.state_dict(), saved_model_path)
 
-    return avg_f1
+    # # Save predictions over validation set
+    # predictions_df = pd.DataFrame(predictions)
+    # predictions_csv_path = os.path.join(data_dir, "predictions.csv")
+    # predictions_df.to_csv(predictions_csv_path, index=False)
+
+    # Save confusion matrix
+    cm = confusion_matrix(
+        predictions[0],
+        predictions[1],
+        labels=[0, 1],
+    )
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm / np.sum(cm), annot=True, fmt=".2%", cmap="Blues")
+    plt.xlabel("Predicted labels")
+    plt.ylabel("True labels")
+    plt.title("Confusion matrix")
+    plt.savefig(os.path.join(data_dir, "confusion_matrix.png"))
+    plt.close()
+
+    # Save graph of F1 score evolution
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(1, config["epochs"] + 1), f1_scores_over_epochs, marker="o")
+    plt.title("F1-score evolution")
+    plt.xlabel("Epoch")
+    plt.ylabel("F1-score")
+    plt.grid()
+    plt.savefig(os.path.join(data_dir, "f1-score_evolution.png"))
+    plt.close()
+
+    # Save run info
+    end_time = time.time()
+    duration = end_time - start_time
+    config["last_f1_score"] = f1_scores_over_epochs[-1]
+    config["run_duration"] = duration
+    with open(os.path.join(data_dir, "run_info.json"), "w") as config_file:
+        json.dump(config, config_file)
+
+    return 1
