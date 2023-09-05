@@ -57,16 +57,23 @@ Make sure to follow steps of the **⚙️ Getting started** section beforehand.
 
 # 📝 To do
 `colibri` is an open-source project still under development. Here is a non-exhaustive list of features that could be implemented in the future. Feel free to contribute!
-1. Dimensions AI scrapping
-2. Data merger
-3. Run text classification models to filter publications
-4. Get PDFs
-5. Support other OS than Ubuntu.
-6. Support other Web browsers than Mozilla Firefox to scrape Web of Science.
-7. ...
+1. Support other Web browsers to scrape Web of Science
+2. Scrape other sources to get the publications
+3. Create a unified search query for all scrapping sources
+4. Create a robust benchmark for text classification models, with a dummy model as reference
+5. Get PDFs of publications
+and more...
 
 <br/>
 
 # 📜 Author & license
-This project is designed by [Emil Răducanu](https://github.com/emilraducanu) and [Damien Beillouin](https://github.com/dbeillouin).<br/>
-License: to be determined.
+`colibri` is designed by [Emil Răducanu](https://github.com/emilraducanu) and [Damien Beillouin](https://github.com/dbeillouin).<br/>
+This project is under license [GNU General Public License v3.0 or later](LICENSE.md).
+
+<br/>
+
+<p align="center">
+  <img src=./logos/gplv3-with-text-84x42.png />
+  <br/>
+  <em>colibri Copyright © 2023 Emil Răducanu</em>
+</p>
