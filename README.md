@@ -1,19 +1,20 @@
 ![Logo](./logos/banner_colibri.png)
 ---
-**colibri** is a Python package aimed to synthesise scientific literature, using Natural Language Processing (NLP) techniques. Specify the topic you want to study, **colibri** will select publications from various sources and will analyse, extract and compile relevant data from them.
+`colibri` is a Python package aimed to synthesise scientific literature, using different Machine Learning techniques. Specify the topic you want to study, `colibri` will select publications from various sources and will analyse, extract and compile relevant data from them.
 
 This project was developed as part of the [Operationalising International Research Cooperation on Soil carbon (ORCaSa)](https://irc-orcasa.eu/), an initiative that aims to bring together international stakeholders working on techniques for capturing and storing carbon in the soil.
 
 :warning: *Important note* <br/>
-**colibri** *is developed in the spirit of synthesising all kinds of publications focusing on any topic. For the moment, only the compilation of meta-analyses dealing with the impact of human practices on soil organic carbon is currently implemented.*
+`colibri` *is developed in the spirit of synthesising all kinds of publications focusing on any topic. For the moment, only the compilation of meta-analyses dealing with the impact of human practices on soil organic carbon is currently implemented.*
 
 <br/>
 
 # 🎬 Pipeline backstage
+The data passes through three major and independant steps to get the final `colibri`'s output. Here is some details about these chained blocks.
 ### 1. Scrapping
 xxx
 
-### 2. Filtering
+### 2. Screening
 xxx
 
 ### 3. Characterising
@@ -28,6 +29,9 @@ Before setting up the environment, make sure you have `conda` installed on your 
 - [Anaconda](https://docs.anaconda.com/free/anaconda/install/) (used by the developers for this project)
 - [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
 
+To properly use Selenium (automation of web browsing), you need to download the Driver corresponding to the default web browser of your system. To do so, you can follow the steps of this link:
+
+- [Selenium Client Driver](https://www.selenium.dev/selenium/docs/api/py/#drivers)
 ### 2. Setup
 
 To set up the environment and install the required dependencies, run the following commands in your working directory:
@@ -37,18 +41,13 @@ cd colibri
 conda env create -f environment.yml
 conda activate colibri
 ```
-To properly use Selenium (automation of web browsing), you need to download the Driver corresponding to the default web browser of your system. To do so, you can follow the steps of this link:
-
-- [Selenium Client Driver](https://www.selenium.dev/selenium/docs/api/py/#drivers)
-
-<br/>
 
 The package is now ready to use. You can test the different features in next the section.
 
 <br/>
 
 # 💡 Use cases
-Simple use cases of the package can be found in [this](playground/playground.ipynb) Jupyter Notebook. You can run the the cells in your IDE or use the jupyter server in your localhost by running the following command:
+Simple use cases of the package can be found in [this](playground/playground.ipynb) Jupyter Notebook. You can run the the cells in your IDE or use the Jupyter server in your localhost by running the following command:
 ```bash
 jupyter notebook
 ```
@@ -57,7 +56,7 @@ Make sure to follow steps of the **⚙️ Getting started** section beforehand.
 <br/>
 
 # 📝 To do
-**colibri** is an open-source project still under development. Here is a non-exhaustive list of features that could be implemented in the future. Feel free to contribute!
+`colibri` is an open-source project still under development. Here is a non-exhaustive list of features that could be implemented in the future. Feel free to contribute!
 1. Dimensions AI scrapping
 2. Data merger
 3. Run text classification models to filter publications
@@ -69,5 +68,5 @@ Make sure to follow steps of the **⚙️ Getting started** section beforehand.
 <br/>
 
 # 📜 Author & license
-This project is developed by [Emil Răducanu](https://github.com/emilraducanu) and [Damien Beillouin](https://github.com/dbeillouin).<br/>
+This project is designed by [Emil Răducanu](https://github.com/emilraducanu) and [Damien Beillouin](https://github.com/dbeillouin).<br/>
 License: to be determined.
