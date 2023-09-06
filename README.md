@@ -1,4 +1,4 @@
-`colibri` is a Python package aimed to synthesise scientific literature. Specify the topic you want to study, `colibri` will select publications from various sources and will analyse, extract and compile relevant data from them.
+`colibri` is a Python project aimed to synthesise scientific literature. Specify the topic you want to study, `colibri` will select publications from various sources and will analyse, extract and compile relevant data from them.
 
 This project was developed as part of the [Operationalising International Research Cooperation on Soil carbon (ORCaSa)](https://irc-orcasa.eu/), an initiative that aims to bring together international stakeholders working on techniques for capturing and storing carbon in the soil.
 
@@ -52,13 +52,13 @@ conda env create -f environment.yml
 conda activate colibri
 ```
 
-The package is now ready to use. You can test the different features in next the section.
+The project is now ready to use. You can test the different features in next the section.
 
 <br/>
 
 # 💡 Use cases
 
-Simple use cases of the package can be found in [this](playground/playground.ipynb) Jupyter Notebook. You can run the the cells in your IDE or use the Jupyter server in your localhost by running the following command:
+Simple use cases of the project can be found in [this](playground/playground.ipynb) Jupyter Notebook. You can run the the cells in your IDE or use the Jupyter server in your localhost by running the following command:
 
 ```bash
 jupyter notebook
