@@ -314,3 +314,59 @@ def scrape(query: str, platforms: list[str]):
             PLATFORM_MAP.get(platform)[1](data_dir, query)
 
     return data_dir
+
+
+def scrapping_over_time():
+    """Quick description
+
+    Long description
+
+    Parameters:
+    query (str):
+
+    Returns:
+
+    """
+
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    import pandas as pd
+    import os
+
+    current_dir = os.getcwd()
+    target_folder = "colibri"
+    while os.path.basename(current_dir) != target_folder:
+        current_dir = os.path.dirname(current_dir)
+
+    dates = []
+    sizes = []
+    data_dir = os.path.join(current_dir, "data/merged_cleaned_pub")
+    for subdir in os.listdir(data_dir):
+        file_path = os.path.join(data_dir, subdir, "data.pkl")
+        df = pd.read_pickle(file_path)
+        date = subdir.split("_")[0]
+        dates.append(date)
+        sizes.append(len(df))
+
+    data = {"Date": dates, "Number of publications": sizes}
+    df = pd.DataFrame(data)
+    df["Date"] = pd.to_datetime(df["Date"])
+    df = df.sort_values(by="Date")
+
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(
+        x=df["Date"],
+        y=df["Number of publications"],
+        hue=df["Number of publications"],
+        palette="plasma",
+        marker="o",
+    )
+
+    plt.title(
+        "Number of publications scrapped on WoS Core Collection over time\n(cf. search query)"
+    )
+    plt.xlabel("Date")
+    plt.ylabel("Number of publications")
+    plt.xticks(ticks=df["Date"], labels=df["Date"].dt.strftime("%Y-%m-%d"), rotation=45)
+    plt.tight_layout()
+    plt.savefig(os.path.join(current_dir, "visualisations/scrapping_over_time.png"))
