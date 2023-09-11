@@ -27,7 +27,7 @@ def find_download_directory():
     return None
 
 
-def merger_cleaner(data_dir, PLATFORM_MAP):
+def merger_cleaner(data_dir):
     """Quick description
 
     Long description
@@ -41,6 +41,7 @@ def merger_cleaner(data_dir, PLATFORM_MAP):
 
     import os
     import pandas as pd
+    from src.glob_var import PLATFORM_MAP
 
     platform_plotted = []
     data = []
@@ -69,9 +70,9 @@ def merger_cleaner(data_dir, PLATFORM_MAP):
         f"{size_diff} papers deleted ({proportion}%) because of lack of information or duplicates."
     )
 
-    merged_cleaned_dir = data_dir.replace("scrapped", "merged_cleaned")
-    os.makedirs(merged_cleaned_dir)
-    merge_clean_file = os.path.join(merged_cleaned_dir, "data.pkl")
+    merged_cleaned_pub_dir = data_dir.replace("scrapped_pub", "merged_cleaned_pub")
+    os.makedirs(merged_cleaned_pub_dir)
+    merge_clean_file = os.path.join(merged_cleaned_pub_dir, "data.pkl")
     df.to_pickle(merge_clean_file)
 
     print(
@@ -242,7 +243,7 @@ def wos(data_dir, query: str):
     return wos_file
 
 
-def scrape(query: str, platforms: list[str], PLATFORM_MAP):
+def scrape(query: str, platforms: list[str]):
     """Get publications from platforms specified
 
     Scrape data from the results of a search query. Scrapping will be performed on each platform specified. Data will be stored in 'colibri/data'.
@@ -254,6 +255,7 @@ def scrape(query: str, platforms: list[str], PLATFORM_MAP):
     Returns:
     None
     """
+    from src.glob_var import PLATFORM_MAP
 
     if platforms == []:
         print(
@@ -303,10 +305,68 @@ def scrape(query: str, platforms: list[str], PLATFORM_MAP):
         target_folder = "colibri"
         while os.path.basename(current_dir) != target_folder:
             current_dir = os.path.dirname(current_dir)
-        data_dir = os.path.join(current_dir, "data/scrapped/" + utc_current_time_str)
+        data_dir = os.path.join(
+            current_dir, "data/scrapped_pub/" + utc_current_time_str
+        )
         os.makedirs(data_dir)
 
         for platform in valid_platforms:
             PLATFORM_MAP.get(platform)[1](data_dir, query)
 
     return data_dir
+
+
+def scrapping_over_time():
+    """Quick description
+
+    Long description
+
+    Parameters:
+    query (str):
+
+    Returns:
+
+    """
+
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    import pandas as pd
+    import os
+
+    current_dir = os.getcwd()
+    target_folder = "colibri"
+    while os.path.basename(current_dir) != target_folder:
+        current_dir = os.path.dirname(current_dir)
+
+    dates = []
+    sizes = []
+    data_dir = os.path.join(current_dir, "data/merged_cleaned_pub")
+    for subdir in os.listdir(data_dir):
+        file_path = os.path.join(data_dir, subdir, "data.pkl")
+        df = pd.read_pickle(file_path)
+        date = subdir.split("_")[0]
+        dates.append(date)
+        sizes.append(len(df))
+
+    data = {"Date": dates, "Number of publications": sizes}
+    df = pd.DataFrame(data)
+    df["Date"] = pd.to_datetime(df["Date"])
+    df = df.sort_values(by="Date")
+
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(
+        x=df["Date"],
+        y=df["Number of publications"],
+        hue=df["Number of publications"],
+        palette="plasma",
+        marker="o",
+    )
+
+    plt.title(
+        "Number of publications scrapped on WoS Core Collection over time\n(cf. search query)"
+    )
+    plt.xlabel("Date")
+    plt.ylabel("Number of publications")
+    plt.xticks(ticks=df["Date"], labels=df["Date"].dt.strftime("%Y-%m-%d"), rotation=45)
+    plt.tight_layout()
+    plt.savefig(os.path.join(current_dir, "visualisations/scrapping_over_time.png"))
