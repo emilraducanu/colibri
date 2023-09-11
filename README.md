@@ -1,3 +1,5 @@
+![](visualisations/logos/banner_colibri.png)
+---
 `colibri` is a Python project aimed to synthesise scientific literature. Specify the topic you want to study, `colibri` will select publications from various sources and will analyse, extract and compile relevant data from them.
 
 This project was developed as part of the [Operationalising International Research Cooperation on Soil carbon (ORCaSa)](https://irc-orcasa.eu/), an initiative that aims to bring together international stakeholders working on techniques for capturing and storing carbon in the soil.
@@ -94,7 +96,7 @@ This project is distributed under [GNU General Public License v3.0 or later](COP
 <br/>
 
 <p align="center">
-  <img src=./logos/gplv3-with-text-84x42.png />
+  <img src="visualisations/logos/gplv3-with-text-84x42.png"/>
   <br/>
   <em>colibri Copyright © 2023 Emil Răducanu</em>
 </p>
