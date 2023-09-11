@@ -96,7 +96,7 @@ This project is distributed under [GNU General Public License v3.0 or later](COP
 <br/>
 
 <p align="center">
-  <img src=visualisations/logos/gplv3-with-text-84x42.png/>
+  <img src="visualisations/logos/gplv3-with-text-84x42.png"/>
   <br/>
   <em>colibri Copyright © 2023 Emil Răducanu</em>
 </p>
