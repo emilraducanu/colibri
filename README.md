@@ -77,8 +77,10 @@ Make sure to follow steps of the **⚙️ Getting started** section beforehand.
 3. Scrape other sources to get the publications
 4. Create a unified search query for all scrapping sources
 5. Create a robust benchmark for text classification models, with a dummy model as reference
-6. Implement step "3. Characterising", in order to fill the [output file](./data/template_colibri_output.json) in a semi-automated way
-7. Migrate the project management on `hatch`
+6. Optimising DistilBERT F1-score
+7. Implement step "3. Characterising", in order to fill the [output file](./data/template_colibri_output.json) in a semi-automated way
+8. Publication language checking (traduction?)
+9. Migrate the project management on `hatch`
 
 and more...
 

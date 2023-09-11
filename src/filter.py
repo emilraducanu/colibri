@@ -2,7 +2,7 @@
 # saving confusion matrix, saving evolution of F1 score through epochs, visualise predictions)
 
 
-def train_distilbert_v4(config):
+def train_distilbert(config):
     """Quick description
 
     Long description
@@ -21,7 +21,7 @@ def train_distilbert_v4(config):
     from sklearn.model_selection import train_test_split
     from torch.utils.data import TensorDataset, DataLoader
     from tqdm import tqdm
-    from sklearn.metrics import f1_score
+    from sklearn.metrics import f1_score, accuracy_score
     import pytz
     import datetime
     import time
@@ -133,6 +133,7 @@ def train_distilbert_v4(config):
     # TRAINING LOOP
     num_epochs = config["epochs"]
     f1_scores_over_epochs = []
+    accuracy_score_over_epochs = []
     for epoch in range(num_epochs):
         model.train()
         train_loss = 0.0
@@ -203,12 +204,14 @@ def train_distilbert_v4(config):
         current_epoch_f1_score = f1_score(
             predictions[0], predictions[1], zero_division=1, average="weighted"
         )
+        current_epoch_accuracy = accuracy_score(predictions[0], predictions[1])
         f1_scores_over_epochs.append(current_epoch_f1_score)
+        accuracy_score_over_epochs.append(current_epoch_accuracy)
 
         # Update progress bar description with validation results
         val_progress_bar.set_postfix(f1_score=f"{current_epoch_f1_score:.4f}")
         print(
-            f"Epoch {epoch + 1}/{num_epochs} - Validation F1-score: {current_epoch_f1_score:.4f}"
+            f"Epoch {epoch + 1}/{num_epochs} - Validation | Accuracy: {current_epoch_accuracy:.4f}, F1-score: {current_epoch_f1_score:.4f}"
         )
 
     # Save the fine-tuned model
