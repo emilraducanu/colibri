@@ -1,0 +1,159 @@
+{
+    "Meta-analyses": [
+        {
+            "DOI": "10.1111/gcbb.12234",
+            "Title": "Emission of CO2 from biochar-amended soils and implications for soil organic carbon",
+            "Abstract": "Soil amendment with pyrogenic organic matter (PyOM), also named biochar, is claimed to sequester carbon (C). However, possible interactions between PyOM and native soil organic carbon (SOC) may accelerate the loss of SOC, thus reducing PyOM's C sequestration potential. We combined the results of 46 studies in a meta-analysis to investigate changes in CO2 emission of PyOM-amended soils and to identify the causes of these changes and the possible factors involved. Our results showed a statistically significant increase of 28% in CO2 emission from PyOM-amended soils. When grouped by PyOM C (PyC):SOC ratios, the group of studies with a ratio >2 showed a significant increase in CO2 emissions, but those with a ratio <2 showed no significant effect of PyOM application on CO2 emission. Our data are consistent with the hypothesis that increased CO2 emission after PyOM addition is additive and mainly derived from PyOM's labile C fractions. The PyC:SOC ratio provided the best predictor of increases in CO2 production after PyOM addition to soil. This meta-analysis highlights the importance of taking into account the amount of applied PyC in relation to SOC for designing future decomposition experiments.",
+            "Keywords": [
+                "additive effects",
+                "carbon sequestration",
+                "decomposition",
+                "priming",
+                "pyrogenic organic matter",
+                "recalcitrance"
+            ],
+            "Authors": [
+                "Sagrilo, E",
+                "Jeffery, S",
+                "Hoffland, E",
+                "Kuyper, TW"
+            ],
+            "Publication year": 2015,
+            "Journal": "Global change biology bioenergy",
+            "Platforms origin": [
+                "WoS"
+            ],
+            "Population": "Cropland",
+            "Intervention": "Management",
+            "Sub-intervention": "Amendments pyrogenic",
+            "Sub-sub-intervention": "Biochar",
+            "Control": "No amendments pyrogenic",
+            "Outcome": "Bulk soil",
+            "Sub-outcome": "SOC concentration",
+            "Measure": {
+                "Lower CI": 0.9329,
+                "Mean": 1.0335,
+                "Upper CI": 1.1432
+            },
+            "Paired data": 179,
+            "PS DOIs": [
+                "10.14454/qn00-qx85",
+                "10.14454/3w3z-sa82",
+                "10.14454/3bpw-w381",
+                "10.1590/s0102-69922012000200010",
+                "10.1090/S0002-9939-2012-11404-2",
+                "10.1063/1.4742131",
+                "10.1007/s13355-012-0130-x",
+                "10.3201/eid1807.120130"
+            ]
+        },
+        {
+            "DOI": "10.1890/10-0660.1",
+            "Title": "Fire effects on temperate forest soil C and N storage",
+            "Abstract": "Temperate forest soils store globally significant amounts of carbon (C) and nitrogen (N). Understanding how soil pools of these two elements change in response to disturbance and management is critical to maintaining ecosystem services such as forest productivity, greenhouse gas mitigation, and water resource protection. Fire is one of the principal disturbances acting on forest soil C and N storage and is also the subject of enormous management efforts. In the present article, we use meta-analysis to quantify fire effects on temperate forest soil C and N storage. Across a combined total of 468 soil C and N response ratios from 57 publications (concentrations and pool sizes), fire had significant overall effects on soil C (-26%) and soil N (-22%). The impacts of fire on forest floors were significantly different from its effects on mineral soils. Fires reduced forest floor C and N storage (pool sizes only) by an average of 59% and 50%, respectively, but the concentrations of these two elements did not change. Prescribed fires caused smaller reductions in forest floor C and N storage (-46% and -35%) than wildfires (-67% and -69%), and the presence of hardwoods also mitigated fire impacts. Burned forest floors recovered their C and N pools in an average of 128 and 103 years, respectively. Among mineral soils, there were no significant changes in C or N storage, but C and N concentrations declined significantly (-11% and -12%, respectively). Mineral soil C and N concentrations were significantly affected by fire type, with no change following prescribed burns, but significant reductions in response to wildfires. Geographic variation in fire effects on mineral soil C and N storage underscores the need for region-specific fire management plans, and the role of fire type in mediating C and N shifts (especially in the forest floor) indicates that averting wildfires through prescribed burning is desirable from a soils perspective.",
+            "Keywords": [
+                "carbon sinks",
+                "fire",
+                "forest management",
+                "meta-analysis",
+                "soil carbon",
+                "soil",
+                "nitrogen",
+                "temperate forests"
+            ],
+            "Authors": [
+                "Nave, LE",
+                "Vance, ED",
+                "Swanston, CW",
+                "Curtis, PS"
+            ],
+            "Publication year": 2011,
+            "Journal": "Ecological applications",
+            "Platforms origin": [
+                "WoS"
+            ],
+            "Population": "Forest land",
+            "Intervention": "Management",
+            "Sub-intervention": "Fire",
+            "Sub-sub-intervention": "N/A",
+            "Control": "No fire",
+            "Outcome": "Bulk soil",
+            "Sub-outcome": "SOC stock",
+            "Measure": {
+                "Lower CI": -58.05,
+                "Mean": -46.15,
+                "Upper CI": -34.05
+            },
+            "Paired data": 38,
+            "PS DOIs": [
+                "10.1111/j.1468-1293.2012.01029_12.x",
+                "10.1016/j.apcatb.2012.06.004",
+                "10.1016/j.powtec.2011.12.057",
+                "10.1109/TASL.2011.2178402",
+                "10.1080/15265161.2012.719272",
+                "10.1097/aog.0b013e3182723a95",
+                "10.1177/0010414012445947",
+                "10.1001/jama.2012.3526",
+                "10.1016/j.optcom.2012.06.060",
+                "10.3126/hn.v11i0.7158",
+                "10.1007/s10615-012-0418-x",
+                "10.3389/fimmu.2012.00072",
+                "10.1016/j.gmit.2012.08.003",
+                "10.1016/j.jmathb.2011.11.001",
+                "10.1364/JOCN.4.000326",
+                "10.1186/1471-2164-13-681",
+                "10.1080/15598608.2012.647489",
+                "10.2308/isys-10258",
+                "10.1063/1.4729423",
+                "10.1016/S0040-1951(12)00005-4",
+                "10.1038/sj.bdj.2012.1036",
+                "10.3732/ajb.1100526",
+                "10.1017/s0029665112002248",
+                "10.1016/j.ijid.2012.05.436",
+                "10.1002/chin.201249124",
+                "10.1016/s1003-6326(11)61400-3",
+                "10.4103/0973-1075.97345",
+                "10.1002/pi.3162",
+                "10.3109/13693786.2011.596288",
+                "10.1016/S1995-7645(12)60036-4",
+                "10.1111/j.1365-2966.2012.20835.x"
+            ]
+        },
+        {
+            "DOI": "10.1016/j.still.2020.104575",
+            "Title": "A calculator to quantify cover crop effects on soil health and productivity",
+            "Abstract": "Many producers use cover crops as a means to increase soil health and agricultural productivity, yet benefits of this practice vary depending on environmental and management conditions. In an effort to objectively evaluate how cover crops affect soil properties and crop production across climates and systems, we compiled data from 269 studies that compared cover crop treatments versus no cover crop controls. We then used t-tests and unbalanced analysis of variation tests to evaluate cover crop-related effects on 38 indicators of soil health and productivity. The t-test analysis indicated that cover cropping caused significant changes in 28 of 38 indicators, with differences seen for all physical parameters and most indicators associated with biological and environmental measurements. The unbalanced analysis of variation test allowed us to identify a hierarchy of most to least important environment and management factors for each indicator. Using this hierarchy, we developed a calculator that allows users to evaluate how cover crop usage affects 13 key indicators, including cash crop yield, weed pressure, soil aggregate stability, soil organic carbon, soil nitrogen, and infiltration rates. The calculator requires only four inputs – climatic region, soil texture group, cash crop rotation, and cover crop type – and as output provides mean percent change for each indicator based on the selected factors. The analyses produced in this study provide new insight into specific soil health and productivity responses to cover cropping, and the corresponding web-based calculator will help to ensure that soil health measurements from the field and laboratory are useful to farmers, planners, and regulators. Further, as more data becomes integrated into the calculator, results will continue to improve in accuracy and realism, ultimately helping to make soil health evaluation a practical outcome for more producers.",
+            "Keywords": [
+                "conservation agriculture",
+                "soil quality",
+                "meta-analysis"
+            ],
+            "Authors": [
+                "Jian, JS",
+                "Lester, BJ",
+                "Du, X",
+                "Reiter, MS",
+                "Stewart, RD"
+            ],
+            "Publication year": 2020,
+            "Journal": "Soil & tillage research",
+            "Platforms origin": [
+                "WoS"
+            ],
+            "Population": "Cropland",
+            "Intervention": "Management",
+            "Sub-intervention": "Cover crops",
+            "Sub-sub-intervention": "Annual crops",
+            "Control": "No cropland",
+            "Outcome": "Soil fractions",
+            "Sub-outcome": "Dissolved organic carbon",
+            "Measure": {
+                "Lower CI": -82.0462850182704,
+                "Mean": -75.3227771010962,
+                "Upper CI": -66.2606577344701
+            },
+            "Paired data": 83,
+            "PS DOIs": "N/A"
+        }
+    ]
+}
