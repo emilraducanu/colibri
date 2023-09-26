@@ -317,14 +317,13 @@ def scrape(query: str, platforms: list[str]):
 
 
 def scrapping_over_time():
-    """Quick description
+    """Visualise the evolution of scrapping over time.
 
-    Long description
+    Generates a graph with the number of publications scrapped over time.
 
-    Parameters:
-    query (str):
+    Parameters: None.
 
-    Returns:
+    Returns: None. Save graph in 'colibri/visualisations/scrapping_over_time.png'.
 
     """
 
