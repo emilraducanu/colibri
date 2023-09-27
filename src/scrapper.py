@@ -334,6 +334,7 @@ def scrapping_over_time():
         hue=df["Number of publications"],
         palette="plasma",
         marker="o",
+        legend=False,
     )
 
     plt.title(
