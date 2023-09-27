@@ -1,12 +1,13 @@
 def find_download_directory():
-    """Quick description
+    """Find the download directory of the machine.
 
-    Long description
+    Find the download directory of the machine, based on the OS.
 
     Parameters:
-    query (str):
+    None.
 
     Returns:
+    dir_path (str): path of the download directory.
 
     """
 
@@ -27,67 +28,11 @@ def find_download_directory():
     return None
 
 
-def merger_cleaner(data_dir):
-    """Quick description
-
-    Long description
-
-    Parameters:
-    query (str):
-
-    Returns:
-
-    """
-
-    import os
-    import pandas as pd
-    from src.glob_var import PLATFORM_MAP
-
-    platform_plotted = []
-    data = []
-    for platform in os.listdir(data_dir):
-        platform_plotted.append(str(platform))
-        file_path = os.path.join(data_dir, platform, "data.pkl")
-        df = pd.read_pickle(file_path)
-        df = df.loc[:, PLATFORM_MAP.get(platform)[2].keys()]
-        df = df.rename(columns=PLATFORM_MAP.get(platform)[2])
-        df.insert(0, "Platform", str(platform))
-        data.append(df)
-
-    df = pd.concat(data)
-    size_before = len(df)
-    print(f"{size_before} papers merged into in a single DataFrame.")
-
-    check_emptyness = ["DOI", "Title", "Abstract"]
-    df = df.dropna(subset=check_emptyness, how="all")
-    df = df.drop_duplicates()
-    df = df[df["DOI"].duplicated(keep=False) == False]
-    size_after = len(df)
-    size_diff = size_before - size_after
-    proportion = round(size_diff * 100 / size_before, 1)
-
-    print(
-        f"{size_diff} papers deleted ({proportion}%) because of lack of information or duplicates."
-    )
-
-    merged_cleaned_pub_dir = data_dir.replace("scrapped_pub", "merged_cleaned_pub")
-    os.makedirs(merged_cleaned_pub_dir)
-    merge_clean_file = os.path.join(merged_cleaned_pub_dir, "data.pkl")
-    df.to_pickle(merge_clean_file)
-
-    print(
-        f"Data coming from the selected platform(s) are cleaned and merged into file {merge_clean_file} ."
-    )
-    print("Data ready to be passed into phase II.")
-
-    return merge_clean_file
-
-
 def wos(data_dir, query: str):
-    """Get data (title, authors, DOI, etc.) of papers coming from Web of Science
+    """Get data (title, authors, DOI, etc.) of publications coming from Web of Science Core collection.
 
     This function provides data of scientific articles coming from the results of a search query on Web of Science Core Collection (https://www.webofscience.com/wos/woscc/advanced-search).
-    The data collected for each result are:
+    The data collected for each result is:
     * DOI
     * Title
     * Authors
@@ -107,7 +52,7 @@ def wos(data_dir, query: str):
     query (str): search query. Sythax (https://webofscience.help.clarivate.com/en-us/Content/wos-core-collection/woscc-search-field-tags.htm).
 
     Returns:
-    The path of Pickle file containing data.
+    wos_file (str): path of Pickle file containing data.
     """
 
     import os
@@ -144,20 +89,9 @@ def wos(data_dir, query: str):
     ).text
     nb_results = int(nb_results.replace(",", ""))
 
-    print(f"Found {nb_results} papers.")
+    print(f"Found {nb_results} publications.")
 
-    def downloader(input_aera_index, sent_key_low, sent_key_high):
-        """Quick description
-
-        Long description
-
-        Parameters:
-        query (str):
-
-        Returns:
-
-        """
-
+    def wos_downloader(input_aera_index, sent_key_low, sent_key_high):
         time.sleep(5)
         driver.find_element(
             By.XPATH,
@@ -212,13 +146,13 @@ def wos(data_dir, query: str):
         )
 
     for batch_nb in range(int(int(nb_results) / 1000)):
-        downloader(batch_nb, int(batch_nb * 1000) + 1, int(batch_nb * 1000) + 1000)
+        wos_downloader(batch_nb, int(batch_nb * 1000) + 1, int(batch_nb * 1000) + 1000)
         downloaded_count = (batch_nb + 1) * 1000
-        print(f"{downloaded_count} papers downloaded over {nb_results}.")
-    downloader(
+        print(f"{downloaded_count} publications downloaded over {nb_results}.")
+    wos_downloader(
         int(int(nb_results) / 1000), int(int(nb_results) / 1000) * 1000, nb_results
     )
-    print(f"{nb_results} papers downloaded over {nb_results}.")
+    print(f"{nb_results} publications downloaded over {nb_results}.")
 
     driver.quit()
 
@@ -237,83 +171,124 @@ def wos(data_dir, query: str):
     wos_file = os.path.join(wos_folder, "data.pkl")
     df.to_pickle(wos_file)
     print(
-        f"\nRaw data of {size} papers from Web of Science Core Collection saved to {wos_file}."
+        f"\nRaw data of {size} publications from Web of Science Core Collection saved to {wos_file}."
     )
 
     return wos_file
 
 
 def scrape(query: str, platforms: list[str]):
-    """Get publications from platforms specified
+    """Get publications from platform(s) specified, according to a search query.
 
-    Scrape data from the results of a search query. Scrapping will be performed on each platform specified. Data will be stored in 'colibri/data'.
+    Scrape data from the results of a search query. Scrapping is performed on each platform specified. Data is stored in 'colibri/data'.
 
     Parameters:
     query (str): universal search query that will be used in each database platform specified in parameters.
-    platforms (list[str]): list of platforms that will be scrapped. Be careful of the sythax. Supported: ["WoS"]
+    platforms (list[str]): list of platforms that will be scrapped. Supported: ["WoS"].
 
     Returns:
-    None
+    data_dir (str): path of directory containing scrapped publications.
     """
+
     from src.glob_var import PLATFORM_MAP
+    import pytz
+    import datetime
+    import os
 
-    if platforms == []:
-        print(
-            "Parameter 'platforms' is empty. At least one platform must be specified."
-        )
-    else:
-        valid_platforms = []
-        for platform in platforms:
-            if platform in PLATFORM_MAP:
-                valid_platforms.append(platform)
-            else:
-                print(
-                    f"'{platform}' is passed as a platform but not supported by colibri. Correct and re-run the function."
-                )
-                return 0
+    platform_plotted = []
+    for platform in platforms:
+        platform_plotted.append(str(PLATFORM_MAP.get(platform)[0]))
 
-        import pytz
-        import datetime
-        import os
+    print(f"You selected platform(s) {platform_plotted} to get the publications from.")
 
-        platform_plotted = []
-        for platform in valid_platforms:
-            platform_plotted.append(str(PLATFORM_MAP.get(platform)[0]))
+    utc_current_time = datetime.datetime.now(tz=pytz.timezone("UTC"))
+    utc_current_time_str = (
+        str(utc_current_time.year)
+        + "-"
+        + str(utc_current_time.month)
+        + "-"
+        + str(utc_current_time.day)
+        + "_"
+        + str(utc_current_time.hour)
+        + "-"
+        + str(utc_current_time.minute)
+        + "-"
+        + str(utc_current_time.second)
+    )
 
-        sentence_template = "You selected platform(s) {} to get the publications from."
-        formatted_sentence = sentence_template.format(", ".join(platform_plotted))
-        print(formatted_sentence)
+    print(f"\nScrapping started at {utc_current_time_str} UTC.")
 
-        utc_current_time = datetime.datetime.now(tz=pytz.timezone("UTC"))
-        utc_current_time_str = (
-            str(utc_current_time.year)
-            + "-"
-            + str(utc_current_time.month)
-            + "-"
-            + str(utc_current_time.day)
-            + "_"
-            + str(utc_current_time.hour)
-            + "-"
-            + str(utc_current_time.minute)
-            + "-"
-            + str(utc_current_time.second)
-        )
+    current_dir = os.getcwd()
+    target_folder = "colibri"
+    while os.path.basename(current_dir) != target_folder:
+        current_dir = os.path.dirname(current_dir)
+    data_dir = os.path.join(current_dir, "data/scrapped_pub/" + utc_current_time_str)
+    os.makedirs(data_dir)
 
-        print(f"\nScrapping started at {utc_current_time_str} UTC.")
-
-        current_dir = os.getcwd()
-        target_folder = "colibri"
-        while os.path.basename(current_dir) != target_folder:
-            current_dir = os.path.dirname(current_dir)
-        data_dir = os.path.join(
-            current_dir, "data/scrapped_pub/" + utc_current_time_str
-        )
-        os.makedirs(data_dir)
-
-        for platform in valid_platforms:
-            PLATFORM_MAP.get(platform)[1](data_dir, query)
+    for platform in platforms:
+        PLATFORM_MAP.get(platform)[1](data_dir, query)
 
     return data_dir
+
+
+def merger_cleaner(data_dir):
+    """Merge and clean scrapped data.
+
+    Merge and clean data scrapped on each platform into a single file. Publications containing empty DOIs, titles or abstracts are removed. Then duplicates that could appeared between platforms are removed.
+
+    Parameters:
+    data_dir (str): scrapping directory ('data/scrapped_pub/<yyyy-mm-dd_hh-mm-ss>').
+
+    Returns:
+    merge_clean_file (str): path of the merged and cleaned publications.
+
+    """
+
+    import os
+    import pandas as pd
+    from tabulate import tabulate
+    from src.glob_var import PLATFORM_MAP
+
+    platform_plotted = []
+    data = []
+    for platform in os.listdir(data_dir):
+        platform_plotted.append(str(platform))
+        file_path = os.path.join(data_dir, platform, "data.pkl")
+        df = pd.read_pickle(file_path)
+        df = df.loc[:, PLATFORM_MAP.get(platform)[2].keys()]
+        df = df.rename(columns=PLATFORM_MAP.get(platform)[2])
+        df.insert(0, "Platform", str(platform))
+        data.append(df)
+
+    df = pd.concat(data)
+    size_before = len(df)
+    print(
+        f"{size_before} publications scrapped from {platform_plotted} are now merged into in a single DataFrame."
+    )
+    check_emptyness = ["DOI", "Title", "Abstract"]
+    df = df.dropna(subset=check_emptyness, how="all")
+    df = df.drop_duplicates()
+    df = df[df["DOI"].duplicated(keep=False) == False]
+    size_after = len(df)
+    size_diff = size_before - size_after
+    proportion = round(size_diff * 100 / size_before, 1)
+
+    print(
+        f"{size_diff} publications deleted ({proportion}%) from the DataFrame because of lack of information or duplicates."
+    )
+
+    merged_cleaned_pub_dir = data_dir.replace("scrapped_pub", "merged_cleaned_pub")
+    os.makedirs(merged_cleaned_pub_dir)
+    merge_clean_file = os.path.join(merged_cleaned_pub_dir, "data.pkl")
+    df.to_pickle(merge_clean_file)
+
+    print(
+        f"{size_after} pulications saved into file {merge_clean_file}, here is the first 5 entries."
+    )
+    print(tabulate(df.head(5), headers=df.columns, tablefmt="heavy_outline"))
+    print("Data ready to be passed into phase II.")
+
+    return merge_clean_file
 
 
 def scrapping_over_time():
