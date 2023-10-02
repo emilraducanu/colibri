@@ -17,9 +17,9 @@ def find_download_directory():
         download_dirs = [os.getenv("DOWNLOAD_DIR")]
     else:  # Unix-like
         download_dirs = [
-            os.path.expanduser("~/Downloads"),  # Fallback for Unix-like systems
-            os.getenv("XDG_DOWNLOAD_DIR"),  # XDG user directory (Linux)
-            os.getenv("DOWNLOAD_DIR"),  # Custom environment variable (if set)
+            os.path.expanduser("~/Downloads"),
+            os.getenv("XDG_DOWNLOAD_DIR"),
+            os.getenv("DOWNLOAD_DIR"),
         ]
 
     for dir_path in download_dirs:
@@ -285,6 +285,10 @@ def merger_cleaner(data_dir):
     print(
         f"{size_after} pulications saved into file {merge_clean_file}, here is the first 5 entries."
     )
+    df['Title'] = df['Title'].str.slice(0,30)
+    df['Keywords'] = df['Keywords'].str.slice(0,30)
+    df['Abstract'] = df['Abstract'].str.slice(0,30)
+    df['DOI'] = df['DOI'].str.slice(0,30)
     print(tabulate(df.head(5), headers=df.columns, tablefmt="heavy_outline"))
     print("Data ready to be passed into phase II.")
 

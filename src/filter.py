@@ -1,7 +1,3 @@
-# Version 5 (titles, abstracts, keywords merged with features of saving the config/perf of the model,
-# saving confusion matrix, saving evolution of F1 score through epochs, visualise predictions)
-
-
 def train_distilbert(config):
     """Quick description
 

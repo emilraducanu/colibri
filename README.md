@@ -1,27 +1,25 @@
-![](visualisations/logos/banner_colibri.png)
----
 `colibri` is a Python project aimed to synthesise scientific literature. Specify the topic you want to study, `colibri` will select publications from various sources and will analyse, extract and compile relevant data from them.
 
 This project was developed as part of the [Operationalising International Research Cooperation on Soil carbon (ORCaSa)](https://irc-orcasa.eu/), an initiative that aims to bring together international stakeholders working on techniques for capturing and storing carbon in the soil.
 
-⚠️ *Important note* <br/>
+⚠️ *Important note* `<br/>`
 `colibri` *is developed in the spirit of synthesising all kinds of publications focusing on any topic. For the moment, only the compilation of meta-analyses dealing with the impact of human practices on soil organic carbon is currently implemented.*
 
 <br/>
 
 # 🎬 Pipeline backstage
 
-`colibri` aims to help scientists to conduct umbrella reviews, i.e. meta-analyses of meta-analyses, in order to get an live overview of the knowledge of a given field.<br/>
+`colibri` aims to help scientists to conduct umbrella reviews, i.e. meta-analyses of meta-analyses, in order to get an live overview of the knowledge of a given field.`<br/>`
 The data passes through three major and independant stages to get the final `colibri`'s output. Here is some details about these chained blocks.
 
 ### 1. Scrapping
 
-Publications from diverse sources need to be collected, so scrapping functions are implemented for different online scientific litterature platforms. Each plateforms structure is different. This heterogeneity is taken into account while dealing with platforms' APIs or raw HTML code. The scrapping can be run at anytime to update the database. The data collected corresponds to the results of a specific search query.<br/>
+Publications from diverse sources need to be collected, so scrapping functions are implemented for different online scientific litterature platforms. Each plateforms structure is different. This heterogeneity is taken into account while dealing with platforms' APIs or raw HTML code. The scrapping can be run at anytime to update the database. The data collected corresponds to the results of a specific search query.`<br/>`
 Every publications are stored into in single DataFrame. At this point, a publication is characterised with four variables: DOI (acting as a unique ID key), title, abstract and keywords. The user can manually add new publications at this step. This DataFrame is then cleaned from duplicates and missing data and is ready to be passed into next phase.
 
 ### 2. Screening
 
-The scrapped publications need to be classified between two sets: corresponding indeed to to field studied or not. To do so, the pre-trained binary classification model DistilBERT is used. The model is fine-tuned to make predictions on the field currently studied ("impact of human practices on soil organic carbon", for the moment). The [training set](./data/distilbert_trainset/trainset.csv) comes from [Beillouin, D., et al.](https://doi.org/10.1038/s41597-022-01318-1).<br/>
+The scrapped publications need to be classified between two sets: corresponding indeed to to field studied or not. To do so, the pre-trained binary classification model DistilBERT is used. The model is fine-tuned to make predictions on the field currently studied ("impact of human practices on soil organic carbon", for the moment). The [training set](./data/distilbert_trainset/trainset.csv) comes from [Beillouin, D., et al.](https://doi.org/10.1038/s41597-022-01318-1).`<br/>`
 Once trained, publications can be classified with a certain level of confidence. The user can correct the predictions of the model at this step, by forcing the inclusion/exclusion of a publication. The filtered data is now ready to be passed into next phase.
 
 ### 3. Characterising
@@ -72,25 +70,13 @@ Make sure to follow steps of the **⚙️ Getting started** section beforehand.
 
 # 📝 To do
 
-`colibri` is a FOSS project still under development. Here is a non-exhaustive list of features that could be implemented in the future. Feel free to contribute!
-
-1. Test the project on non-Unix OS
-2. Support other Web browsers to scrape Web of Science
-3. Scrape other sources to get the publications
-4. Create a unified search query for all scrapping sources
-5. Create a robust benchmark for text classification models, with a dummy model as reference
-6. Optimising DistilBERT F1-score
-7. Implement step "3. Characterising", in order to fill the [output file](./data/template_output_database/doc.txt) in a semi-automated way
-8. Publication language checking (traduction?)
-9. Migrate the project management on `hatch`
-
-and more...
+`colibri` is a FOSS project still under development. You will find [here](TODO.md) a non-exhaustive list of features that could be implemented in the future. Feel free to contribute!
 
 <br/>
 
 # 📜 Author & license
 
-`colibri` is designed by [Emil Răducanu](https://github.com/emilraducanu) and [Damien Beillouin](https://github.com/dbeillouin).<br/>
+`colibri` is designed by [Emil Răducanu](https://github.com/emilraducanu) and [Damien Beillouin](https://github.com/dbeillouin).`<br/>`
 This project is distributed under [GNU General Public License v3.0 or later](COPYING.md).
 
 <br/>

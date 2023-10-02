@@ -10,7 +10,7 @@ dependencies:
   - numpy
   - pandas
   - pytorch
-  - python=3.8
+  - python=3.11
   - pytz
   - requests
   - scikit-learn
