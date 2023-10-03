@@ -10,12 +10,12 @@ For each module `scrapper.py`, `filter.py`, `characteriser.py` and `wrapper.py`:
 
 # OPERATIONAL FEATURES
 
-1. Test the project on non-Unix OS
-2. Support other Web browsers to scrape Web of Science
-3. Scrape other sources to get the publications
-4. Create a unified search query for all scrapping sources
-5. Create a robust benchmark for text classification models, with a dummy model as reference
-6. Optimising DistilBERT F1-score
-7. Implement step "3. Characterising", in order to fill the [output file](./data/template_output_database/doc.txt) in a semi-automated way
-8. Publication language checking (traduction?)
-9. Migrate the project management on `hatch`
+- Test the project on non-Unix OS
+- Support other Web browsers to scrape Web of Science
+- Scrape other sources to get the publications
+- Implement a system to manage several search queries for each scrapping sources
+- Create a robust benchmark for text classification models, with a dummy model as reference
+- Optimising DistilBERT F1-score
+- Step "3. Characterising" - fill the [output file](./data/template_output_database/doc.txt) in a semi-automated way
+Publication language checking (traduction?)
+- Migrate the project management on `hatch`
