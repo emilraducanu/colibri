@@ -7,6 +7,7 @@ For each module `scrapper.py`, `filter.py`, `characteriser.py` and `wrapper.py`:
 - For each function, write Docstrings
 - Update `environment.yml`
 - Update `__init__.py`
+- Update `playground.ipynb`
 
 # OPERATIONAL FEATURES
 
