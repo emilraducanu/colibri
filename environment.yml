@@ -1,28 +1,26 @@
 name: colibri
 channels:
+  - anaconda
   - defaults
   - conda-forge
-  - anaconda
 dependencies:
   - black
   - jupyter
   - matplotlib
   - numpy
   - pandas
-  - PyMuPDF
   - pytorch
   - python=3.11
   - pytz
-  - random
   - requests
   - scikit-learn
   - seaborn
   - selenium
   - statsmodels
-  - string
-  - subprocess
   - tabulate
   - time
   - tqdm
   - transformers
-  - unpywall
+  - pip:
+    - pymupdf
+    - unpywall
