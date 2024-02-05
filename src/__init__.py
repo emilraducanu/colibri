@@ -7,5 +7,5 @@ from .scrapper import (
 )
 from .filter import train_distilbert
 from .wrapper import run_pipeline
-from .characteriser import is_valid_pdf, ask_unpaywall, get_pdf
+from .characteriser import is_valid_pdf, ask_unpaywall, get_pdf, df2json
 from .glob_var import PLATFORM_MAP

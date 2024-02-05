@@ -82,3 +82,23 @@ def get_pdf(doi_list):
     )
     pdf_mapping.to_pickle(join_path(current_dir, "data/pub_pdf/pdf_mapping.pkl"))
     return pdf_mapping
+
+def df2json(df, output_file_path: str):
+    """Convert dataframe into cilibri final JSON output.
+
+    Utility that convert the output dataframe of the different stage of the pipeline into a JSON file (cf. 'colibri/data/template_output_database')
+
+    Parameters:
+    df: Pandas Dataframe that must be converted. Name of columns must respect the output template.
+    output_file_path: absolute path of the output JSON file.
+
+    Returns:
+    None. Only creates the file.
+    """
+    import pandas as pd
+    import json
+
+    json_data = {"Meta-analyses": df.to_dict(orient="records")}
+
+    with open(output_file_path, "w") as json_file:
+        json.dump(json_data, json_file, indent=4)
