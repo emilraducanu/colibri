@@ -83,6 +83,7 @@ def get_pdf(doi_list):
     pdf_mapping.to_pickle(join_path(current_dir, "data/pub_pdf/pdf_mapping.pkl"))
     return pdf_mapping
 
+
 def df2json(df, output_file_path: str):
     """Convert dataframe into cilibri final JSON output.
 
