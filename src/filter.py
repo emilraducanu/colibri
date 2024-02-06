@@ -252,3 +252,72 @@ def train_distilbert(config):
         json.dump(config, config_file)
 
     return 1
+
+
+def classifier(saved_weights: str, text: str):
+    """
+    Perform inference using the fine-tuned DistilBERT model on the given text.
+    Classifies whereas a text describes a MA studying the impact of human practices
+    on SOC (included) or not (excluded).
+
+    Parameters:
+    - saved_weights (str): path whrere the weights of the fine-tuned model are saved (.pt file).
+    - text (str): text to be classified (concatenation of the title, the abstract and the keywords of an article).
+
+    Returns:
+    - prediction (str): Predicted class ('included' or 'excluded').
+    - probability: probability of belonging to the predicted class.
+    """
+
+    import torch
+    from transformers import DistilBertTokenizer, DistilBertModel
+    import torch.nn as nn
+
+    # Define device (GPU is available, CPU otherwise)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Load the fine-tuned model and custom the tokenizer
+    model_name = "distilbert-base-uncased"
+
+    tokenizer = DistilBertTokenizer.from_pretrained(model_name)
+    model = DistilBertModel.from_pretrained(model_name)
+    new_tokens = [
+        "SOC",
+        "SOM",
+        "meta-analysis",
+        "metaanalysis",
+        "meta-analyses",
+        "metaanalyses",
+    ]
+    tokenizer.add_tokens(new_tokens)
+    model.resize_token_embeddings(len(tokenizer))
+    model.load_state_dict(torch.load(saved_weights, map_location=device))
+    classification_head = nn.Sequential(
+        nn.Linear(model.config.hidden_size, 64),
+        nn.ReLU(),
+        nn.Dropout(0.3),
+        nn.Linear(64, 2),
+    )
+    model.classification_head = classification_head
+    model.eval()
+
+    # Tokenize and encode the text
+    inputs = tokenizer(text, return_tensors="pt")
+
+    # Forward pass through the model
+    with torch.no_grad():
+        outputs = model(**inputs)
+
+    # Extract the output logits from the classification head
+    logits = model.classification_head(outputs.last_hidden_state[:, 0, :])
+
+    # Convert logits to probabilities using softmax
+    probabilities = nn.functional.softmax(logits, dim=1)
+
+    # Get the predicted class (0 for 'excluded' and 1 for 'included')
+    probability, predicted_class = torch.max(probabilities, 1)
+
+    # Map the predicted class to the original labels
+    predicted_label = "included" if predicted_class.item() == 1 else "excluded"
+
+    return predicted_label, probability
