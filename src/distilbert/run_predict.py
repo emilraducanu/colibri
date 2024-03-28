@@ -14,7 +14,7 @@ if __name__ == "__main__":
     # Manage data paths
     root_dir = Path(__file__).parent.parent.parent
     train_set_path = root_dir / "data" / "distilbert_trainset" / "trainset.pkl"
-    model_dir = root_dir / "data" / "distilbert_runs" / "now"
+    model_dir = root_dir / "data" / "distilbert_runs" / "2024-03-28_10-43-37"
 
     # Loads fine-tuned model
     tokenizer, model = load_finetuned_model(model_dir=model_dir, device="cpu")

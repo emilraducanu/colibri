@@ -63,20 +63,10 @@ def load_finetuned_model(
         device: either 'cpu' or 'gpu'
         model_name: HuggingFace model name
     """
-    tokenizer = get_tokenizer(model_name=model_name)
-
-    model = DistilBertModel.from_pretrained(model_name)
-    model.resize_token_embeddings(len(tokenizer))
-
-    model.load_state_dict(
-        torch.load(model_dir / "fine_tuned_model.pt", map_location=device)
-    )
-
-    model_head = get_model_head(model=model)
+    tokenizer, model, model_head = load_pretrained_model(model_name=model_name)
     model_head.load_state_dict(
         torch.load(model_dir / "fine_tuned_head.pt", map_location=device)
     )
-
     model.model_head = model_head
     model.eval()
 

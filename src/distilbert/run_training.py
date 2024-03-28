@@ -63,8 +63,7 @@ def train(
     target_dir = root_dir / "data" / "distilbert_runs" / now
     target_dir.mkdir(parents=True, exist_ok=True)
 
-    # Save the fine-tuned model to file
-    torch.save(model.state_dict(), target_dir / "fine_tuned_model.pt")
+    # Save the fine-tuned model head to file
     torch.save(model_head.state_dict(), target_dir / "fine_tuned_head.pt")
 
     # Save results to figures
