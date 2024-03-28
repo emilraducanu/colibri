@@ -1,0 +1,1 @@
+{"train_set_path": "/home/nathalie-saintgours/dev/colibri/data/distilbert_trainset/trainset.pkl", "epochs": 100, "batch_size": 32, "learning_rate": 0.001, "padding_length": 100, "test_size": 0.2, "duration": 2153.040953874588, "last_f1_score": 0.8218049263061304}
